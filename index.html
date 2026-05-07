@@ -890,8 +890,9 @@
 <script>
   const TOTAL_FRAMES = 120;
   const FRAME_SMOOTHING = 0.16;
-  const FRAME_PATH = 'frames/webp_frames';
-  const FRAME_EXT = 'webp';
+  const USE_MOBILE_FRAMES = window.matchMedia('(max-width: 900px)').matches;
+  const DESKTOP_FRAME_PATH = 'frames/webp_frames';
+  const MOBILE_FRAME_PATH = 'mobile';
 
   const header       = document.getElementById('header');
   const videoWrap    = document.getElementById('video-wrap');
@@ -911,7 +912,8 @@
   const searchStatus   = document.getElementById('search-status');
 
   // ── Предзагрузка кадров ─────────────────────────────────────
-  // Кадры: frames/webp_frames/0001.webp, frames/webp_frames/0002.webp ... frames/webp_frames/0120.webp
+  // Desktop: frames/webp_frames/0001.webp ... 0120.webp
+  // Mobile: mobile/0001.png ... 0120.png
   const frames = new Array(TOTAL_FRAMES);
   let loadedCount = 0;
   let currentFrame = 0;
@@ -953,13 +955,13 @@ window.addEventListener('resize', resizeCanvas);
       img.onerror = () => {
         if (!img.dataset.fallback) {
           img.dataset.fallback = '1';
-          img.src = `frames/${num}.png`;
+          img.src = USE_MOBILE_FRAMES ? `${DESKTOP_FRAME_PATH}/${num}.webp` : `frames/${num}.png`;
           return;
         }
         onDone();
       }; // не зависаем если какой-то кадр не нашёлся
       frames[i] = img;
-      img.src = `${FRAME_PATH}/${num}.${FRAME_EXT}`;
+      img.src = USE_MOBILE_FRAMES ? `${MOBILE_FRAME_PATH}/${num}.png` : `${DESKTOP_FRAME_PATH}/${num}.webp`;
     }
   }
 
@@ -973,9 +975,7 @@ window.addEventListener('resize', resizeCanvas);
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
 
-  const baseScale = Math.min(cw / iw, ch / ih);
-  const mobileZoom = cw <= 430 ? 2.05 : cw <= 900 ? 1.65 : 1;
-  const scale = baseScale * mobileZoom;
+  const scale = Math.min(cw / iw, ch / ih);
   const x = (cw - iw * scale) / 2;
   const y = (ch - ih * scale) / 2;
 

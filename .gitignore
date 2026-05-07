@@ -12,6 +12,8 @@ frames/*.mkv
 frames/*.webm
 frames/restored/
 mobile/*.png
+.tmp_sharp/
+mobile_webp_test/
 
 # Keep optimized animation frames used by index.html
 !frames/webp_frames/

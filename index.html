@@ -892,7 +892,7 @@
   const FRAME_SMOOTHING = 0.16;
   const USE_MOBILE_FRAMES = window.matchMedia('(max-width: 900px)').matches;
   const DESKTOP_FRAME_PATH = 'frames/webp_frames';
-  const MOBILE_FRAME_PATH = 'mobile';
+  const MOBILE_FRAME_PATH = 'mobile_webp';
 
   const header       = document.getElementById('header');
   const videoWrap    = document.getElementById('video-wrap');
@@ -913,7 +913,7 @@
 
   // ── Предзагрузка кадров ─────────────────────────────────────
   // Desktop: frames/webp_frames/0001.webp ... 0120.webp
-  // Mobile: mobile/0001.png ... 0120.png
+  // Mobile: mobile_webp/0001.webp ... 0120.webp
   const frames = new Array(TOTAL_FRAMES);
   let loadedCount = 0;
   let currentFrame = 0;
@@ -961,7 +961,7 @@ window.addEventListener('resize', resizeCanvas);
         onDone();
       }; // не зависаем если какой-то кадр не нашёлся
       frames[i] = img;
-      img.src = USE_MOBILE_FRAMES ? `${MOBILE_FRAME_PATH}/${num}.png` : `${DESKTOP_FRAME_PATH}/${num}.webp`;
+      img.src = `${USE_MOBILE_FRAMES ? MOBILE_FRAME_PATH : DESKTOP_FRAME_PATH}/${num}.webp`;
     }
   }
 

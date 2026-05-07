@@ -270,14 +270,16 @@
   /* ── HERO TEXT ── */
   #hero-text {
     position: absolute;
-    bottom: 11vh;
-    left: 0; right: 0;
+    bottom: 8vh;
+    left: 50%;
+    width: min(100% - 40px, 1040px);
+    transform: translateX(-50%);
     text-align: center;
-    pointer-events: none;
+    pointer-events: auto;
   }
   #hero-text h1 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 8vw, 112px);
+    font-size: clamp(46px, 7vw, 100px);
     letter-spacing: 0.04em;
     line-height: 1;
     color: var(--fg);
@@ -288,6 +290,128 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--muted);
+  }
+  .bearing-search {
+    margin: 30px auto 0;
+    width: min(100%, 920px);
+  }
+  .bearing-search-box {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: stretch;
+    min-height: 76px;
+    padding: 8px;
+    border: 1px solid rgba(200,169,110,0.45);
+    border-radius: 999px;
+    background: rgba(8,8,8,0.72);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.42), 0 0 60px rgba(200,169,110,0.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  }
+  .bearing-search-box:focus-within {
+    border-color: rgba(200,169,110,0.9);
+    background: rgba(12,12,12,0.86);
+    box-shadow: 0 28px 100px rgba(0,0,0,0.5), 0 0 90px rgba(200,169,110,0.16);
+  }
+  .bearing-search input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: var(--fg);
+    padding: 0 28px;
+    font-family: 'Jost', sans-serif;
+    font-size: clamp(17px, 2vw, 23px);
+    font-weight: 300;
+    outline: none;
+  }
+  .bearing-search input::placeholder {
+    color: rgba(240,237,232,0.46);
+  }
+  .bearing-search button {
+    min-width: 172px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: transform 0.25s, opacity 0.25s;
+  }
+  .bearing-search button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+  .search-helper {
+    margin-top: 16px;
+    color: rgba(240,237,232,0.62);
+    font-size: 15px;
+    line-height: 1.55;
+    letter-spacing: 0.02em;
+  }
+  .search-examples {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .search-example {
+    border: 0.5px solid rgba(240,237,232,0.14);
+    border-radius: 999px;
+    padding: 8px 14px;
+    background: rgba(255,255,255,0.035);
+    color: rgba(240,237,232,0.68);
+    font-family: 'Jost', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: color 0.25s, border-color 0.25s, background 0.25s;
+  }
+  .search-example:hover {
+    color: var(--fg);
+    border-color: rgba(200,169,110,0.45);
+    background: rgba(200,169,110,0.08);
+  }
+  .search-status {
+    min-height: 22px;
+    margin-top: 14px;
+    color: var(--accent);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 760px) {
+    #header {
+      padding: 0 20px;
+    }
+    nav {
+      gap: 14px;
+    }
+    nav a {
+      display: none;
+    }
+    .bearing-search-box {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      border-radius: 28px;
+      padding: 10px;
+      gap: 8px;
+    }
+    .bearing-search input {
+      height: 58px;
+      padding: 0 16px;
+      text-align: center;
+    }
+    .bearing-search button {
+      min-width: 0;
+      height: 52px;
+    }
   }
 
   /* ── SCROLL HINT ── */
@@ -409,7 +533,7 @@
 
 <!-- HEADER -->
 <header id="header">
-  <a href="#" class="logo">Bearing<span>Pro</span></a>
+  <a href="#" class="logo">Компонент<span>Сервис</span></a>
   <nav>
     <a href="#">Каталог</a>
     <a href="#">Статус доставки</a>
@@ -442,7 +566,20 @@
 
     <div id="hero-text">
       <h1>Точность<br>в движении</h1>
-      <p>Промышленные подшипники нового поколения</p>
+      <p>AI-подбор промышленных подшипников по вашей задаче</p>
+      <form class="bearing-search" id="bearing-search">
+        <div class="bearing-search-box">
+          <input id="bearing-query" type="text" name="query" autocomplete="off" placeholder="Например: нужен подшипник для вала 25 мм, высокая нагрузка и пыль">
+          <button type="submit">Подобрать</button>
+        </div>
+        <div class="search-helper">Пишите как удобно: номер детали, размеры, условия работы или просто обычными словами — мы подберём нужный типоразмер.</div>
+        <div class="search-examples" aria-label="Примеры запросов">
+          <button type="button" class="search-example">для электродвигателя 5 кВт</button>
+          <button type="button" class="search-example">аналог 6205, но для высокой температуры</button>
+          <button type="button" class="search-example">вал 30 мм, нужна защита от пыли</button>
+        </div>
+        <div class="search-status" id="search-status" aria-live="polite"></div>
+      </form>
     </div>
 
     <div class="scroll-hint" id="scroll-hint">
@@ -517,6 +654,9 @@
   const callbackModal  = document.getElementById('callback-modal');
   const callbackForm   = document.getElementById('callback-form');
   const callbackStatus = document.getElementById('callback-status');
+  const bearingSearch  = document.getElementById('bearing-search');
+  const bearingQuery   = document.getElementById('bearing-query');
+  const searchStatus   = document.getElementById('search-status');
 
   // ── Предзагрузка кадров ─────────────────────────────────────
   // Кадры: frames/webp_frames/0001.webp, frames/webp_frames/0002.webp ... frames/webp_frames/0120.webp
@@ -626,6 +766,22 @@ window.addEventListener('resize', resizeCanvas);
     event.preventDefault();
     callbackForm.reset();
     callbackStatus.textContent = 'Заявка принята. Мы скоро перезвоним.';
+  });
+
+  document.querySelectorAll('.search-example').forEach((button) => {
+    button.addEventListener('click', () => {
+      bearingQuery.value = button.textContent;
+      bearingQuery.focus();
+      searchStatus.textContent = '';
+    });
+  });
+
+  bearingSearch.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const query = bearingQuery.value.trim();
+    searchStatus.textContent = query
+      ? 'Скоро здесь появится AI-подбор по вашему запросу.'
+      : 'Опишите задачу любыми словами — например размеры, нагрузку или условия работы.';
   });
 
   // ── Scroll update ────────────────────────────────────────────

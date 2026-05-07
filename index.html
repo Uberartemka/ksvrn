@@ -973,7 +973,9 @@ window.addEventListener('resize', resizeCanvas);
   const iw = img.naturalWidth;
   const ih = img.naturalHeight;
 
-  const scale = Math.min(cw / iw, ch / ih);
+  const baseScale = Math.min(cw / iw, ch / ih);
+  const mobileZoom = cw <= 430 ? 2.05 : cw <= 900 ? 1.65 : 1;
+  const scale = baseScale * mobileZoom;
   const x = (cw - iw * scale) / 2;
   const y = (ch - ih * scale) / 2;
 
@@ -1083,8 +1085,9 @@ window.addEventListener('resize', resizeCanvas);
 
   scrollHint.style.opacity = rawP < 0.05 ? String(1 - rawP * 20) : '0';
 
-  const translateY = p * -vh * 0.42;
-  const scale      = 1 - p * 0.08;
+  const isMobile = window.innerWidth <= 900;
+  const translateY = p * -vh * (isMobile ? 0.34 : 0.42);
+  const scale      = 1 - p * (isMobile ? 0.03 : 0.08);
   videoWrap.style.transform = `translateY(${translateY}px) scale(${scale})`;
 
   heroText.style.opacity   = String(clamp01(1 - rawP * 4));

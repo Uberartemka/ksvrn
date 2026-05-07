@@ -270,16 +270,14 @@
   /* ── HERO TEXT ── */
   #hero-text {
     position: absolute;
-    bottom: 8vh;
-    left: 50%;
-    width: min(100% - 40px, 1040px);
-    transform: translateX(-50%);
+    bottom: 11vh;
+    left: 0; right: 0;
     text-align: center;
-    pointer-events: auto;
+    pointer-events: none;
   }
   #hero-text h1 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(46px, 7vw, 100px);
+    font-size: clamp(52px, 8vw, 112px);
     letter-spacing: 0.04em;
     line-height: 1;
     color: var(--fg);
@@ -291,8 +289,38 @@
     text-transform: uppercase;
     color: var(--muted);
   }
+  .search-section {
+    position: relative;
+    z-index: 2;
+    margin-top: -18vh;
+    padding: 0 40px 86px;
+    background: linear-gradient(to bottom, transparent, var(--bg) 36%, var(--bg));
+  }
+  .search-panel {
+    width: min(100%, 1040px);
+    margin: 0 auto;
+    padding: 34px 34px 28px;
+    border: 0.5px solid rgba(200,169,110,0.22);
+    border-radius: 8px;
+    background: rgba(10,10,10,0.86);
+    box-shadow: 0 34px 110px rgba(0,0,0,0.46);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    text-align: center;
+  }
+  .search-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(34px, 4.8vw, 64px);
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--fg);
+  }
+  .search-title em {
+    color: var(--accent);
+    font-style: normal;
+  }
   .bearing-search {
-    margin: 30px auto 0;
+    margin: 24px auto 0;
     width: min(100%, 920px);
   }
   .bearing-search-box {
@@ -396,6 +424,13 @@
     nav a {
       display: none;
     }
+    .search-section {
+      margin-top: -12vh;
+      padding: 0 18px 64px;
+    }
+    .search-panel {
+      padding: 26px 16px 22px;
+    }
     .bearing-search-box {
       grid-template-columns: 1fr;
       min-height: 0;
@@ -446,9 +481,8 @@
   /* ── SECOND SCREEN ── */
   #second-screen {
     background: var(--bg);
-    padding: 120px 64px 100px;
+    padding: 70px 64px 100px;
     position: relative;
-    margin-top: -30vh; /* отрицательный — поднимает выше, перекрывает анимацию */
   }
   #second-screen::before {
     content: '';
@@ -566,20 +600,7 @@
 
     <div id="hero-text">
       <h1>Точность<br>в движении</h1>
-      <p>AI-подбор промышленных подшипников по вашей задаче</p>
-      <form class="bearing-search" id="bearing-search">
-        <div class="bearing-search-box">
-          <input id="bearing-query" type="text" name="query" autocomplete="off" placeholder="Например: нужен подшипник для вала 25 мм, высокая нагрузка и пыль">
-          <button type="submit">Подобрать</button>
-        </div>
-        <div class="search-helper">Пишите как удобно: номер детали, размеры, условия работы или просто обычными словами — мы подберём нужный типоразмер.</div>
-        <div class="search-examples" aria-label="Примеры запросов">
-          <button type="button" class="search-example">для электродвигателя 5 кВт</button>
-          <button type="button" class="search-example">аналог 6205, но для высокой температуры</button>
-          <button type="button" class="search-example">вал 30 мм, нужна защита от пыли</button>
-        </div>
-        <div class="search-status" id="search-status" aria-live="polite"></div>
-      </form>
+      <p>Промышленные подшипники нового поколения</p>
     </div>
 
     <div class="scroll-hint" id="scroll-hint">
@@ -589,6 +610,26 @@
 
   </div>
 </div>
+
+<!-- SEARCH SECTION -->
+<section class="search-section">
+  <div class="search-panel">
+    <h2 class="search-title">Опишите задачу — <em>мы подберём подшипник</em></h2>
+    <form class="bearing-search" id="bearing-search">
+      <div class="bearing-search-box">
+        <input id="bearing-query" type="text" name="query" autocomplete="off" placeholder="Например: нужен подшипник для вала 25 мм, высокая нагрузка и пыль">
+        <button type="submit">Подобрать</button>
+      </div>
+      <div class="search-helper">Пишите как удобно: номер детали, размеры, условия работы или просто обычными словами — мы подберём нужный типоразмер.</div>
+      <div class="search-examples" aria-label="Примеры запросов">
+        <button type="button" class="search-example">для электродвигателя 5 кВт</button>
+        <button type="button" class="search-example">аналог 6205, но для высокой температуры</button>
+        <button type="button" class="search-example">вал 30 мм, нужна защита от пыли</button>
+      </div>
+      <div class="search-status" id="search-status" aria-live="polite"></div>
+    </form>
+  </div>
+</section>
 
 <!-- SECOND SCREEN -->
 <div id="second-screen">

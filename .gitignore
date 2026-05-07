@@ -1,0 +1,21 @@
+# Source and editor files
+Adobe Premiere Pro Auto-Save/
+исходники пнг/
+*.prproj
+*.prin
+
+# Heavy rendered/exported assets not required for GitHub Pages
+output.webm
+test.html
+frames/*.png
+frames/*.mkv
+frames/*.webm
+frames/restored/
+
+# Keep optimized animation frames used by index.html
+!frames/webp_frames/
+!frames/webp_frames/*.webp
+
+# System files
+.DS_Store
+Thumbs.db

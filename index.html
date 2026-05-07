@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Название — Промышленные подшипники</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080808;
+    --fg: #f0ede8;
+    --muted: #6b6b6b;
+    --accent: #c8a96e;
+    --header-h: 64px;
+  }
+
+  html { scroll-behavior: auto; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── LOADER ── */
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    transition: opacity 0.6s ease;
+  }
+  #loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+  #loader-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  #loader-bar-wrap {
+    width: 200px;
+    height: 1px;
+    background: rgba(240,237,232,0.1);
+  }
+  #loader-bar {
+    height: 1px;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.1s linear;
+  }
+  #loader-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    letter-spacing: 0.05em;
+    color: var(--fg);
+  }
+
+  /* ── HEADER ── */
+  #header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--header-h);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    transform: translateY(-100%);
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s ease;
+    background: rgba(8,8,8,0);
+  }
+  #header.visible {
+    transform: translateY(0);
+    background: rgba(8,8,8,0.82);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border-bottom: 0.5px solid rgba(200,169,110,0.15);
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.08em;
+    color: var(--fg);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  nav { display: flex; align-items: center; gap: 36px; }
+  nav a,
+  nav button {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: color 0.25s;
+    font-family: inherit;
+    font-weight: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  nav a:hover,
+  nav button:hover { color: var(--fg); }
+  .nav-cta {
+    border: 0.5px solid rgba(200,169,110,0.4);
+    color: var(--accent) !important;
+    padding: 8px 20px;
+    border-radius: 2px;
+    transition: background 0.25s, color 0.25s !important;
+  }
+  .nav-cta:hover { background: var(--accent) !important; color: var(--bg) !important; }
+
+  body.modal-open { overflow: hidden; }
+  .callback-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 180;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease;
+  }
+  .callback-modal.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .callback-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .callback-dialog {
+    position: relative;
+    width: min(100%, 440px);
+    padding: 40px;
+    background: rgba(12,12,12,0.96);
+    border: 0.5px solid rgba(200,169,110,0.28);
+    border-radius: 4px;
+    box-shadow: 0 30px 90px rgba(0,0,0,0.45);
+    transform: translateY(18px) scale(0.98);
+    transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .callback-modal.open .callback-dialog {
+    transform: translateY(0) scale(1);
+  }
+  .callback-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+    border: 0;
+    background: rgba(255,255,255,0.04);
+    color: var(--muted);
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.25s, background 0.25s;
+  }
+  .callback-close:hover {
+    color: var(--fg);
+    background: rgba(255,255,255,0.08);
+  }
+  .callback-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: 0.05em;
+    color: var(--fg);
+  }
+  .callback-text {
+    margin-top: 14px;
+    color: rgba(240,237,232,0.58);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .callback-form {
+    margin-top: 28px;
+    display: grid;
+    gap: 14px;
+  }
+  .callback-form input {
+    width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: 0.5px solid rgba(240,237,232,0.12);
+    border-radius: 2px;
+    background: rgba(255,255,255,0.035);
+    color: var(--fg);
+    font-family: inherit;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .callback-form input:focus {
+    border-color: rgba(200,169,110,0.55);
+    background: rgba(255,255,255,0.055);
+  }
+  .callback-submit {
+    height: 50px;
+    margin-top: 6px;
+    border: 0;
+    border-radius: 2px;
+    background: var(--accent);
+    color: var(--bg);
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.25s;
+  }
+  .callback-submit:hover { opacity: 0.86; }
+  .callback-status {
+    min-height: 18px;
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── SCROLL CONTAINER ── */
+  #scroll-driver { height: 200vh; position: relative; }
+
+  /* ── STICKY STAGE ── */
+  #stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ── CANVAS WRAP (параллакс) ── */
+  #video-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    will-change: transform;
+  }
+  #bearing-canvas {
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  pointer-events: none;
+}
+
+  /* ── HERO TEXT ── */
+  #hero-text {
+    position: absolute;
+    bottom: 11vh;
+    left: 0; right: 0;
+    text-align: center;
+    pointer-events: none;
+  }
+  #hero-text h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 112px);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--fg);
+  }
+  #hero-text p {
+    margin-top: 12px;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── SCROLL HINT ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: opacity 0.4s;
+  }
+  .scroll-hint span {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .scroll-hint-line {
+    width: 1px;
+    height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); }
+    50%       { opacity: 1;   transform: scaleY(1.2); }
+  }
+
+  /* ── SECOND SCREEN ── */
+  #second-screen {
+    background: var(--bg);
+    padding: 120px 64px 100px;
+    position: relative;
+    margin-top: -30vh; /* отрицательный — поднимает выше, перекрывает анимацию */
+  }
+  #second-screen::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--accent), transparent);
+    opacity: 0.3;
+  }
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 64px;
+  }
+  .reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 100px;
+  }
+  .review-card {
+    border: 0.5px solid rgba(240,237,232,0.08);
+    padding: 32px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.02);
+    transition: border-color 0.3s;
+  }
+  .review-card:hover { border-color: rgba(200,169,110,0.25); }
+  .stars { display: flex; gap: 4px; margin-bottom: 20px; }
+  .star {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  }
+  .review-text { font-size: 14px; line-height: 1.75; color: rgba(240,237,232,0.6); margin-bottom: 24px; }
+  .review-author { display: flex; align-items: center; gap: 12px; }
+  .avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(200,169,110,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500; color: var(--accent); letter-spacing: 0.05em;
+  }
+  .author-info strong { display: block; font-size: 13px; font-weight: 500; }
+  .author-info span   { font-size: 11px; color: var(--muted); }
+  .company-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    padding-top: 60px;
+    border-top: 0.5px solid rgba(240,237,232,0.06);
+  }
+  .company-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 4vw, 64px);
+    letter-spacing: 0.04em; line-height: 1.05;
+    color: var(--fg); margin-bottom: 32px;
+  }
+  .company-title em { font-style: normal; color: var(--accent); }
+  .company-desc { font-size: 15px; line-height: 1.8; color: rgba(240,237,232,0.55); max-width: 500px; }
+  .stats-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  .stat-box {
+    background: rgba(255,255,255,0.025);
+    border: 0.5px solid rgba(240,237,232,0.06);
+    padding: 28px 24px;
+  }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.03em; line-height: 1; color: var(--fg); }
+  .stat-unit { color: var(--accent); font-size: 28px; }
+  .stat-label { margin-top: 8px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div id="loader-pct">0%</div>
+  <div id="loader-bar-wrap"><div id="loader-bar"></div></div>
+  <div id="loader-label">Загрузка анимации</div>
+</div>
+
+<!-- HEADER -->
+<header id="header">
+  <a href="#" class="logo">Bearing<span>Pro</span></a>
+  <nav>
+    <a href="#">Каталог</a>
+    <a href="#">Статус доставки</a>
+    <button type="button" class="nav-cta" data-open-callback>Заказать звонок</button>
+  </nav>
+</header>
+
+<div class="callback-modal" id="callback-modal" aria-hidden="true">
+  <div class="callback-backdrop" data-close-callback></div>
+  <div class="callback-dialog" role="dialog" aria-modal="true" aria-labelledby="callback-title">
+    <button type="button" class="callback-close" data-close-callback aria-label="Закрыть">×</button>
+    <h2 class="callback-title" id="callback-title">Заказать звонок</h2>
+    <p class="callback-text">Оставьте контакты — специалист свяжется с вами и поможет подобрать подшипники под задачу.</p>
+    <form class="callback-form" id="callback-form">
+      <input type="text" name="name" placeholder="Ваше имя" autocomplete="name" required>
+      <input type="tel" name="phone" placeholder="Телефон" autocomplete="tel" required>
+      <button type="submit" class="callback-submit">Отправить заявку</button>
+      <div class="callback-status" id="callback-status" aria-live="polite"></div>
+    </form>
+  </div>
+</div>
+
+<!-- SCROLL DRIVER -->
+<div id="scroll-driver">
+  <div id="stage">
+
+    <div id="video-wrap">
+      <canvas id="bearing-canvas" width="1920" height="1080"></canvas>
+    </div>
+
+    <div id="hero-text">
+      <h1>Точность<br>в движении</h1>
+      <p>Промышленные подшипники нового поколения</p>
+    </div>
+
+    <div class="scroll-hint" id="scroll-hint">
+      <span>Скролл</span>
+      <div class="scroll-hint-line"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECOND SCREEN -->
+<div id="second-screen">
+  <p class="section-label">Нам доверяют</p>
+
+  <div class="reviews-grid">
+    <div class="review-card">
+      <div class="stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+      <p class="review-text">Поставки точно в срок, документация полная. За два года работы ни одного брака. Рекомендую как надёжного партнёра для производства.</p>
+      <div class="review-author">
+        <div class="avatar">АК</div>
+        <div class="author-info"><strong>Алексей Корнев</strong><span>Главный механик, «СибМаш»</span></div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+      <p class="review-text">Оперативная техподдержка и широкий каталог — нашли даже редкие типоразмеры. Сервис на уровне европейских компаний.</p>
+      <div class="review-author">
+        <div class="avatar">МВ</div>
+        <div class="author-info"><strong>Мария Власова</strong><span>Инженер-конструктор, «ПромЭнерго»</span></div>
+      </div>
+    </div>
+    <div class="review-card">
+      <div class="stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div>
+      <p class="review-text">Внедрили подшипники серии 6000 в новую линию — вибрация снизилась на 30%, плановый ресурс увеличен вдвое. Отличное качество стали.</p>
+      <div class="review-author">
+        <div class="avatar">ДС</div>
+        <div class="author-info"><strong>Дмитрий Соколов</strong><span>Технолог, «Кировский завод»</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="company-grid">
+    <div>
+      <h2 class="company-title">Мы производим<br><em>стандарт</em><br>отрасли</h2>
+      <p class="company-desc">Название — российский производитель??? прецизионных подшипников для машиностроения, горнодобывающей промышленности и энергетики. Каждый продукт проходит контроль качества по ISO 9001 перед отгрузкой.</p>
+    </div>
+    <div class="stats-col">
+      <div class="stat-box"><div class="stat-num">18<span class="stat-unit">+</span></div><div class="stat-label">лет на рынке</div></div>
+      <div class="stat-box"><div class="stat-num">4<span class="stat-unit">K</span></div><div class="stat-label">позиций в каталоге</div></div>
+      <div class="stat-box"><div class="stat-num">99<span class="stat-unit">%</span></div><div class="stat-label">вовремя</div></div>
+      <div class="stat-box"><div class="stat-num">620<span class="stat-unit">+</span></div><div class="stat-label">клиентов</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const TOTAL_FRAMES = 120;
+  const FRAME_SMOOTHING = 0.16;
+  const FRAME_PATH = 'frames/webp_frames';
+  const FRAME_EXT = 'webp';
+
+  const header       = document.getElementById('header');
+  const videoWrap    = document.getElementById('video-wrap');
+  const heroText     = document.getElementById('hero-text');
+  const scrollHint   = document.getElementById('scroll-hint');
+  const scrollDriver = document.getElementById('scroll-driver');
+  const canvas       = document.getElementById('bearing-canvas');
+  const ctx          = canvas.getContext('2d');
+  const loader       = document.getElementById('loader');
+  const loaderPct    = document.getElementById('loader-pct');
+  const loaderBar    = document.getElementById('loader-bar');
+  const callbackModal  = document.getElementById('callback-modal');
+  const callbackForm   = document.getElementById('callback-form');
+  const callbackStatus = document.getElementById('callback-status');
+
+  // ── Предзагрузка кадров ─────────────────────────────────────
+  // Кадры: frames/webp_frames/0001.webp, frames/webp_frames/0002.webp ... frames/webp_frames/0120.webp
+  const frames = new Array(TOTAL_FRAMES);
+  let loadedCount = 0;
+  let currentFrame = 0;
+  let targetFrame = 0;
+// Добавь перед preloadFrames(...)
+function resizeCanvas() {
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+  drawFrame(Math.round(currentFrame));
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+  function preloadFrames(onReady) {
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const img = new Image();
+      img.decoding = 'async';
+      img.loading = 'eager';
+      if ('fetchPriority' in img) img.fetchPriority = i < 18 ? 'high' : 'auto';
+      const num = String(i + 1).padStart(4, '0'); // 0001, 0002 ...
+      let done = false;
+
+      const onDone = () => {
+        if (done) return;
+        done = true;
+        loadedCount++;
+        const pct = Math.round(loadedCount / TOTAL_FRAMES * 100);
+        loaderPct.textContent = pct + '%';
+        loaderBar.style.width = pct + '%';
+        if (loadedCount === TOTAL_FRAMES) onReady();
+      };
+
+      img.onload  = () => {
+        if (img.decode) {
+          img.decode().catch(() => {}).then(onDone);
+        } else {
+          onDone();
+        }
+      };
+      img.onerror = () => {
+        if (!img.dataset.fallback) {
+          img.dataset.fallback = '1';
+          img.src = `frames/${num}.png`;
+          return;
+        }
+        onDone();
+      }; // не зависаем если какой-то кадр не нашёлся
+      frames[i] = img;
+      img.src = `${FRAME_PATH}/${num}.${FRAME_EXT}`;
+    }
+  }
+
+  // ── Рисуем кадр ─────────────────────────────────────────────
+  function drawFrame(index) {
+  const img = frames[index];
+  if (!img || !img.complete || !img.naturalWidth) return;
+
+  const cw = canvas.width;
+  const ch = canvas.height;
+  const iw = img.naturalWidth;
+  const ih = img.naturalHeight;
+
+  const scale = Math.min(cw / iw, ch / ih);
+  const x = (cw - iw * scale) / 2;
+  const y = (ch - ih * scale) / 2;
+
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, x, y, iw * scale, ih * scale);
+}
+
+  // ── Helpers ──────────────────────────────────────────────────
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function openCallbackModal() {
+    callbackModal.classList.add('open');
+    callbackModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    callbackStatus.textContent = '';
+    setTimeout(() => {
+      const input = callbackModal.querySelector('input');
+      if (input) input.focus();
+    }, 80);
+  }
+
+  function closeCallbackModal() {
+    callbackModal.classList.remove('open');
+    callbackModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('modal-open');
+  }
+
+  document.querySelectorAll('[data-open-callback]').forEach((button) => {
+    button.addEventListener('click', openCallbackModal);
+  });
+
+  document.querySelectorAll('[data-close-callback]').forEach((button) => {
+    button.addEventListener('click', closeCallbackModal);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && callbackModal.classList.contains('open')) closeCallbackModal();
+  });
+
+  callbackForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    callbackForm.reset();
+    callbackStatus.textContent = 'Заявка принята. Мы скоро перезвоним.';
+  });
+
+  // ── Scroll update ────────────────────────────────────────────
+  let rafId = null;
+  let headerShown = false;
+
+  function onScroll() {
+    if (!rafId) rafId = requestAnimationFrame(update);
+  }
+
+  function update() {
+  rafId = null;
+
+  const scrollY = window.scrollY;
+  const driverH = scrollDriver.offsetHeight;
+  const vh      = window.innerHeight;
+  const animEnd = driverH - vh;
+
+  const rawP = clamp01(scrollY / animEnd);
+  targetFrame = rawP * (TOTAL_FRAMES - 1);
+  currentFrame += (targetFrame - currentFrame) * FRAME_SMOOTHING;
+  if (Math.abs(targetFrame - currentFrame) < 0.01) currentFrame = targetFrame;
+
+  const p = easeOut(currentFrame / (TOTAL_FRAMES - 1));
+
+  drawFrame(Math.round(currentFrame));
+
+  const showHeader = scrollY > vh * 0.15;
+  if (showHeader !== headerShown) {
+    headerShown = showHeader;
+    header.classList.toggle('visible', showHeader);
+  }
+
+  scrollHint.style.opacity = rawP < 0.05 ? String(1 - rawP * 20) : '0';
+
+  const translateY = p * -vh * 0.42;
+  const scale      = 1 - p * 0.08;
+  videoWrap.style.transform = `translateY(${translateY}px) scale(${scale})`;
+
+  heroText.style.opacity   = String(clamp01(1 - rawP * 4));
+  heroText.style.transform = `translateY(${p * -30}px)`;
+}
+
+  // ── Старт ────────────────────────────────────────────────────
+  preloadFrames(() => {
+    loader.classList.add('hidden');
+    setTimeout(() => { loader.style.display = 'none'; }, 650);
+
+    drawFrame(0);
+    function loop() {
+  update();
+  requestAnimationFrame(loop);
+}
+loop();
+  });
+</script>
+</body>
+</html>

@@ -342,19 +342,22 @@
     background: rgba(12,12,12,0.86);
     box-shadow: 0 28px 100px rgba(0,0,0,0.5), 0 0 90px rgba(200,169,110,0.16);
   }
-  .bearing-search input {
+  .bearing-search textarea {
     width: 100%;
     min-width: 0;
     border: 0;
     background: transparent;
     color: var(--fg);
-    padding: 0 28px;
+    padding: 22px 28px 16px;
     font-family: 'Jost', sans-serif;
     font-size: clamp(17px, 2vw, 23px);
     font-weight: 300;
+    line-height: 1.35;
     outline: none;
+    resize: none;
+    overflow: hidden;
   }
-  .bearing-search input::placeholder {
+  .bearing-search textarea::placeholder {
     color: rgba(240,237,232,0.46);
   }
   .bearing-search button {
@@ -554,6 +557,214 @@
   .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; letter-spacing: 0.03em; line-height: 1; color: var(--fg); }
   .stat-unit { color: var(--accent); font-size: 28px; }
   .stat-label { margin-top: 8px; font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); }
+
+  @media (max-width: 900px) {
+    #header {
+      height: 58px;
+      padding: 0 22px;
+    }
+    .logo {
+      font-size: 22px;
+    }
+    nav {
+      gap: 16px;
+    }
+    nav a {
+      display: none;
+    }
+    .nav-cta {
+      padding: 8px 14px;
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      white-space: nowrap;
+    }
+    #scroll-driver {
+      height: 170vh;
+    }
+    #hero-text {
+      bottom: 14vh;
+      padding: 0 22px;
+    }
+    #hero-text h1 {
+      font-size: clamp(56px, 18vw, 86px);
+    }
+    #hero-text p {
+      max-width: 320px;
+      margin: 12px auto 0;
+      font-size: 11px;
+      line-height: 1.55;
+      letter-spacing: 0.14em;
+    }
+    .scroll-hint {
+      bottom: 24px;
+    }
+    .search-section {
+      margin-top: -14vh;
+      padding: 0 18px 58px;
+    }
+    .search-panel {
+      padding: 26px 16px 24px;
+      border-radius: 14px;
+    }
+    .search-title {
+      font-size: clamp(34px, 11vw, 48px);
+      line-height: 0.98;
+    }
+    .bearing-search {
+      margin-top: 20px;
+    }
+    .bearing-search-box {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      padding: 10px;
+      gap: 10px;
+      border-radius: 28px;
+    }
+    .bearing-search textarea {
+      height: auto;
+      min-height: 76px;
+      padding: 0 14px;
+      text-align: left;
+      font-size: 17px;
+      line-height: 1.35;
+    }
+    .bearing-search button {
+      width: 100%;
+      min-width: 0;
+      height: 52px;
+      font-size: 12px;
+    }
+    .search-helper {
+      margin-top: 14px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+    .search-examples {
+      margin-top: 14px;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+    .search-example {
+      padding: 8px 11px;
+      font-size: 11px;
+      text-align: left;
+    }
+    #second-screen {
+      padding: 54px 18px 72px;
+    }
+    .section-label {
+      margin-bottom: 28px;
+      font-size: 10px;
+      letter-spacing: 0.24em;
+    }
+    .reviews-grid {
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-bottom: 56px;
+    }
+    .review-card {
+      padding: 22px;
+    }
+    .review-text {
+      font-size: 13px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .company-grid {
+      grid-template-columns: 1fr;
+      gap: 34px;
+      padding-top: 42px;
+    }
+    .company-title {
+      margin-bottom: 20px;
+      font-size: clamp(42px, 14vw, 56px);
+    }
+    .company-desc {
+      max-width: none;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+    .stats-col {
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat-box {
+      padding: 22px 16px;
+    }
+    .stat-num {
+      font-size: 40px;
+    }
+    .stat-unit {
+      font-size: 24px;
+    }
+    .stat-label {
+      font-size: 10px;
+      line-height: 1.35;
+    }
+    .callback-modal {
+      align-items: flex-end;
+      padding: 12px;
+    }
+    .callback-dialog {
+      width: 100%;
+      padding: 34px 22px 24px;
+      border-radius: 12px;
+    }
+    .callback-title {
+      font-size: 38px;
+    }
+  }
+
+  @media (max-width: 430px) {
+    #header {
+      padding: 0 14px;
+    }
+    .logo {
+      font-size: 19px;
+      letter-spacing: 0.06em;
+    }
+    .nav-cta {
+      padding: 7px 10px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+    #scroll-driver {
+      height: 160vh;
+    }
+    #hero-text {
+      bottom: 16vh;
+      padding: 0 16px;
+    }
+    #hero-text h1 {
+      font-size: clamp(50px, 18vw, 72px);
+    }
+    #hero-text p {
+      font-size: 10px;
+    }
+    .search-section {
+      padding: 0 12px 50px;
+    }
+    .search-panel {
+      padding: 24px 12px 20px;
+    }
+    .bearing-search textarea {
+      min-height: 86px;
+      font-size: 16px;
+    }
+    .search-examples {
+      display: grid;
+      grid-template-columns: 1fr;
+    }
+    .search-example {
+      width: 100%;
+    }
+    #second-screen {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+    .stats-col {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 </head>
 <body>
@@ -617,7 +828,7 @@
     <h2 class="search-title">Опишите задачу — <em>мы подберём подшипник</em></h2>
     <form class="bearing-search" id="bearing-search">
       <div class="bearing-search-box">
-        <input id="bearing-query" type="text" name="query" autocomplete="off" placeholder="Например: нужен подшипник для вала 25 мм, высокая нагрузка и пыль">
+        <textarea id="bearing-query" name="query" rows="1" autocomplete="off" placeholder="Например: нужен подшипник для вала 25 мм, высокая нагрузка и пыль"></textarea>
         <button type="submit">Подобрать</button>
       </div>
       <div class="search-helper">Пишите как удобно: номер детали, размеры, условия работы или просто обычными словами — мы подберём нужный типоразмер.</div>
@@ -809,9 +1020,23 @@ window.addEventListener('resize', resizeCanvas);
     callbackStatus.textContent = 'Заявка принята. Мы скоро перезвоним.';
   });
 
+  function resizeSearchField() {
+    bearingQuery.style.height = 'auto';
+    bearingQuery.style.height = `${bearingQuery.scrollHeight}px`;
+  }
+
+  bearingQuery.addEventListener('input', resizeSearchField);
+  bearingQuery.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      bearingSearch.requestSubmit();
+    }
+  });
+
   document.querySelectorAll('.search-example').forEach((button) => {
     button.addEventListener('click', () => {
       bearingQuery.value = button.textContent;
+      resizeSearchField();
       bearingQuery.focus();
       searchStatus.textContent = '';
     });

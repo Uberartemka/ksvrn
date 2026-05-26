@@ -56,6 +56,10 @@
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8a3 3 0 0 0-3 3"/></svg>
         Парсер лидов B2B
       </button>
+      <button onclick="switchTab('field-audit')" id="btn-field-audit" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2M3 13h18"/></svg>
+        Цифровой Чемоданчик
+      </button>
       <button onclick="switchTab('clients')" id="btn-clients" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition">
         <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
         База B2B клиентов
@@ -487,6 +491,110 @@
       </div>
     </section>
 
+    <!-- TAB: FIELD AUDIT (ЦИФРОВОЙ ЧЕМОДАНЧИК) -->
+    <section id="tab-field-audit" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-extrabold font-bebas tracking-wide">Полевой Аудит оборудования (Цифровой Чемоданчик)</h1>
+        <span class="text-xs text-neutral-500 font-semibold">Рабочее место выездного инженера КС</span>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <!-- Input parameters -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-sm space-y-5">
+          <h2 class="text-lg font-bold font-bebas tracking-wider border-b border-neutral-100 pb-2">Замеры оборудования у клиента</h2>
+          
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Объект (Клиент)</label>
+              <select id="audit-rep-client" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+                <option value="ООО 'АГРОЭКО'">ООО "АГРОЭКО"</option>
+                <option value="ООО 'ЭКОНИВА'">ООО "ЭКОНИВА"</option>
+                <option value="АПХ 'МИРАТОРГ'">АПХ "МИРАТОРГ"</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Измеряемый узел</label>
+              <select id="audit-rep-node" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+                <option value="приводной вал нории">Приводной вал нории (30 мм)</option>
+                <option value="вал виброгрохота">Вал виброгрохота (75 мм)</option>
+                <option value="дискатор почвообработки">Узел дискатора (40 мм)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-neutral-500 uppercase mb-1.5">Диаметр вала (мм)</label>
+              <input id="audit-rep-shaft" type="number" value="30" class="w-full rounded-lg bg-slate-50 border border-neutral-200 p-2 text-xs font-semibold outline-none focus:border-hhb" />
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-neutral-500 uppercase mb-1.5">Пыль/Абразив</label>
+              <select id="audit-rep-dust" class="w-full rounded-lg bg-slate-50 border border-neutral-200 p-2 text-xs outline-none">
+                <option value="extreme">Экстремальная (Зернопыль)</option>
+                <option value="medium">Средняя (Земля/Песок)</option>
+                <option value="low">Минимальная</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-neutral-500 uppercase mb-1.5">Текущий бренд</label>
+              <select id="audit-rep-brand" class="w-full rounded-lg bg-slate-50 border border-neutral-200 p-2 text-xs outline-none">
+                <option value="skf">SKF / FAG (Дорогой импорт)</option>
+                <option value="china">Дешевый Китай (быстрый износ)</option>
+              </select>
+            </div>
+          </div>
+
+          <button onclick="calculateFieldRoi()" class="w-full bg-hhb hover:bg-hhb-dark text-white text-xs py-3.5 rounded-xl font-bold uppercase tracking-wider transition shadow-lg shadow-hhb/10">Рассчитать ТЭО и окупаемость HHB</button>
+        </div>
+
+        <!-- Economic Feasibility Output -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-neutral-100 pb-2">
+            <h2 class="text-lg font-bold font-bebas tracking-wider">Технико-экономическое обоснование (ТЭО)</h2>
+            <button onclick="window.print()" class="text-xs text-hhb hover:underline flex items-center gap-1 font-semibold">
+              🖨️ Печать ТЭО для Гл. Инженера
+            </button>
+          </div>
+
+          <div id="roi-document" class="border border-neutral-200 p-5 rounded-xl space-y-4 bg-slate-50 text-xs leading-relaxed min-h-[300px]">
+            <div class="text-center font-bold text-sm uppercase text-neutral-800 border-b border-neutral-200 pb-2">РАСЧЕТ ОКУПАЕМОСТИ ПРИ ПЕРЕХОДЕ НА HHB</div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <span class="text-neutral-500 font-semibold uppercase text-[9px]">Клиент:</span>
+                <div id="roi-client" class="font-bold text-neutral-800">ООО "АГРОЭКО"</div>
+              </div>
+              <div class="text-right">
+                <span class="text-neutral-500 font-semibold uppercase text-[9px]">Аудируемый узел:</span>
+                <div id="roi-node" class="font-bold text-neutral-800">приводной вал нории</div>
+              </div>
+            </div>
+
+            <!-- Stats grid -->
+            <div class="grid grid-cols-3 gap-2 py-2">
+              <div class="bg-white p-2.5 rounded-lg border border-neutral-100 text-center">
+                <span class="text-neutral-400 text-[8px] font-bold uppercase">Цена комплекта HHB</span>
+                <div id="roi-hhb-price" class="text-sm font-bold text-hhb mt-0.5">1 180 ₽</div>
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-neutral-100 text-center">
+                <span class="text-neutral-400 text-[8px] font-bold uppercase">Выгода на закупке</span>
+                <div id="roi-purchase-save" class="text-sm font-bold text-neutral-800 mt-0.5">3 400 ₽</div>
+              </div>
+              <div class="bg-white p-2.5 rounded-lg border border-neutral-100 text-center">
+                <span class="text-neutral-400 text-[8px] font-bold uppercase">Экономия на простоях</span>
+                <div id="roi-downtime-save" class="text-sm font-bold text-emerald-600 mt-0.5">120 000 ₽ / год</div>
+              </div>
+            </div>
+
+            <div class="space-y-2 border-t border-neutral-200 pt-3">
+              <p><strong>Инженерное заключение:</strong> Рекомендуется замена изношенного узла <span id="roi-old-brand" class="font-bold text-neutral-700">SKF</span> на специализированный корпусной узел <strong>HHB UCP 206 LS3</strong>. Износостойкое трехкромочное уплотнение защищает узел от пыли во влажной среде.</p>
+              <p class="text-neutral-500"><strong>Финансовый ROI:</strong> Инвестиции в переход на продукцию HHB окупаются уже при <strong>первом предотвращенном аварийном простое</strong>. Экономический эффект за 12 месяцев за счет увеличения межремонтного интервала составит более <span id="roi-total-benefit" class="font-bold text-emerald-600">123 400 ₽</span>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- TAB 4: CLIENT DATABASE -->
     <section id="tab-clients" class="hidden space-y-6">
       <div class="flex items-center justify-between">
@@ -770,6 +878,42 @@
 
     function exportParsedLeads() {
       alert('База найденных предприятий успешно экспортирована в leads.csv!');
+    }
+
+    /* ========== FIELD AUDIT (ЦИФРОВОЙ ЧЕМОДАНЧИК) LOGIC ========== */
+    function calculateFieldRoi() {
+      const client = document.getElementById('audit-rep-client').value;
+      const node = document.getElementById('audit-rep-node').value;
+      const shaft = parseInt(document.getElementById('audit-rep-shaft').value) || 30;
+      const dust = document.getElementById('audit-rep-dust').value;
+      const brand = document.getElementById('audit-rep-brand').value;
+
+      // Update fields
+      document.getElementById('roi-client').textContent = client;
+      document.getElementById('roi-node').textContent = node;
+
+      const hhbPrice = shaft > 50 ? 7950 : 1180;
+      const oldPrice = brand === 'skf' ? (hhbPrice * 2) : (hhbPrice * 0.5);
+      
+      document.getElementById('roi-hhb-price').textContent = hhbPrice.toLocaleString('ru-RU') + " ₽";
+      
+      // Calculate savings on purchase
+      const purchaseSave = brand === 'skf' ? (oldPrice - hhbPrice) : 0;
+      document.getElementById('roi-purchase-save').textContent = purchaseSave > 0 
+        ? purchaseSave.toLocaleString('ru-RU') + " ₽" 
+        : "0 ₽ (Стандартная закупка)";
+
+      // Calculate economic downtime savings
+      const downtimeCost = shaft > 50 ? 500000 : 120000;
+      document.getElementById('roi-downtime-save').textContent = downtimeCost.toLocaleString('ru-RU') + " ₽ / год";
+
+      // Final summary update
+      document.getElementById('roi-old-brand').textContent = brand === 'skf' ? 'SKF / FAG' : 'бюджетного китайского аналога';
+      
+      const totalBenefit = purchaseSave + downtimeCost;
+      document.getElementById('roi-total-benefit').textContent = totalBenefit.toLocaleString('ru-RU') + " ₽";
+
+      alert('ТЭО успешно рассчитано! Результаты выведены на бланк справа.');
     }
 
     /* Initialize workspace states on start */

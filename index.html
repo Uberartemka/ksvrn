@@ -121,6 +121,10 @@
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-7.58 7-13a7 7 0 10-14 0c0 5.42 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>
         Воронеж
       </button>
+      <a href="lk.html" class="hidden sm:inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition mr-2">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Личный кабинет B2B
+      </a>
       <a href="admin.html" class="hidden sm:inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition mr-2">
         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
         Панель менеджера
@@ -159,9 +163,6 @@
     <p class="text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
       Качество для тяжелой промышленности и агрохолдингов. Прямой контракт с заводом HEBEI HAILAN, отгрузка со склада в Воронеже за 1 день.
     </p>
-    <div class="pt-2">
-      <img src="images/ucp.jpg" alt="HHB bearing" class="w-64 h-64 object-contain mx-auto rounded-2xl bg-white/5 border border-white/10 p-4 shadow-xl" />
-    </div>
     <div class="flex flex-col gap-2.5 pt-4">
       <a href="#ai" class="inline-flex items-center justify-center gap-2 rounded-xl bg-hhb text-white py-3.5 text-xs font-bold uppercase tracking-wider transition">
         Умный подбор аналога
@@ -195,10 +196,10 @@
       <!-- Search Input Container -->
       <div class="relative flex flex-col md:flex-row items-stretch gap-3">
         <div class="relative flex-1">
-          <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="absolute left-4 top-5 md:top-1/2 md:-translate-y-1/2 w-5 h-5 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>
           </svg>
-          <textarea id="aiSearchInput" rows="1" placeholder="Загрузка подсказок..." class="w-full rounded-2xl bg-white/5 pl-12 pr-4 py-4 text-white placeholder-neutral-500 outline-none border border-white/5 focus:border-hhb focus:bg-white/10 transition resize-none text-base min-h-[58px] leading-normal"></textarea>
+          <textarea id="aiSearchInput" rows="1" placeholder="Загрузка подсказок..." class="w-full rounded-2xl bg-white/5 pl-11 pr-3 py-3.5 md:pl-12 md:pr-4 md:py-4 text-white placeholder-neutral-500 outline-none border border-white/5 focus:border-hhb focus:bg-white/10 transition resize-none text-sm md:text-base min-h-[80px] md:min-h-[58px] leading-normal"></textarea>
         </div>
         <button id="aiSearchBtn" class="rounded-2xl bg-hhb hover:bg-hhb-dark text-white px-8 py-4 font-semibold text-base transition flex items-center justify-center gap-2 shadow-lg shadow-hhb/10 shrink-0">
           <span>Подобрать</span>
@@ -348,6 +349,16 @@
           </select>
           <div id="cityResult" class="mt-3 text-sm text-ink-700"></div>
         </div>
+
+        <!-- Fast order tracking by number (podshipniki36-style) -->
+        <div class="mt-4 pt-4 border-t border-neutral-200 space-y-2">
+          <label class="text-xs font-bold text-ink-700 uppercase tracking-wider block">Быстрое отслеживание заказа</label>
+          <div class="flex gap-2">
+            <input id="trackNumInput" type="text" placeholder="Номер заказа (напр., '104-M')" class="flex-1 rounded-xl bg-neutral-100 border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-hhb" />
+            <button onclick="trackOrderMainPage()" class="rounded-xl bg-neutral-900 text-white hover:bg-black px-4 py-2 text-xs font-semibold transition">ОК</button>
+          </div>
+          <div id="trackResult" class="text-xs font-medium"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -450,7 +461,10 @@
         <li class="flex gap-3"><span class="text-hhb font-bold">→</span> Подбор серии HHB с лучшим ресурсом</li>
         <li class="flex gap-3"><span class="text-hhb font-bold">→</span> Техническая документация на узел</li>
       </ul>
-      <a href="#" class="mt-8 inline-flex items-center gap-2 rounded-full bg-hhb px-6 py-3 font-semibold hover:bg-hhb-dark">Заказать выезд инженера</a>
+      <div class="mt-8 flex flex-col sm:flex-row gap-3">
+        <button onclick="openAuditWizard()" class="inline-flex items-center justify-center gap-2 rounded-full bg-hhb px-6 py-3.5 text-xs font-bold uppercase tracking-wider hover:bg-hhb-dark transition shadow-lg shadow-hhb/10">Запустить ИИ-Аудит узла</button>
+        <a href="#ai" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3.5 text-xs font-bold uppercase tracking-wider hover:bg-white/5 transition">Заказать выезд инженера</a>
+      </div>
     </div>
     <div class="fade-up">
       <div class="aspect-square rounded-3xl bg-gradient-to-br from-hhb to-hhb-dark p-1">
@@ -919,6 +933,24 @@
     r.innerHTML = `<div class="rounded-xl bg-hhb/5 p-3"><div class="font-bold text-hhb">${t.days}</div><div class="text-xs text-ink-500">${t.price}</div></div>`;
   });
 
+  /* ========== FAST ORDER TRACKING ========== */
+  const orderTrackDatabase = {
+    "104-M": "🚚 В пути (Липецк). Прибытие запланировано на завтра.",
+    "105-M": "🕒 Ждет подтверждения менеджера Компонент Сервис.",
+    "103-M": "✓ Получен (Воронеж, ул. Промышленная, 1). Сделка успешно закрыта."
+  };
+  function trackOrderMainPage() {
+    const inputVal = document.getElementById('trackNumInput').value.trim().toUpperCase();
+    const resultEl = document.getElementById('trackResult');
+    if (!inputVal) { resultEl.innerHTML = ''; return; }
+    const status = orderTrackDatabase[inputVal];
+    if (status) {
+      resultEl.innerHTML = `<div class="p-2.5 rounded-lg bg-green-500/10 border border-green-500/20 text-green-400 mt-2 font-semibold">${status}</div>`;
+    } else {
+      resultEl.innerHTML = `<div class="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 mt-2 font-semibold">Заказ с таким номером не найден в базе 1С.</div>`;
+    }
+  }
+
   /* ========== CATALOG REAL FACTORY DATA ========== */
   // Dynamically pulling official categories and images from www.fkd-bearing.com servers
   const products = [
@@ -992,6 +1024,90 @@
     });
   });
 
+  /* ========== DIGITAL PORTABLE BRIEFCASE (ИИ-АУДИТ) ========== */
+  let auditStep = 1;
+  const auditData = { industry: '', shaft: '', housing: '', dust: '', wet: '', problem: '' };
+
+  function openAuditWizard() {
+    auditStep = 1;
+    document.getElementById('auditStep1').classList.remove('hidden');
+    document.getElementById('auditStep2').classList.add('hidden');
+    document.getElementById('auditStep3').classList.add('hidden');
+    document.getElementById('auditResult').classList.add('hidden');
+    document.getElementById('auditWizardModal').classList.remove('hidden');
+    document.body.classList.add('overflow-hidden');
+  }
+
+  function closeAuditWizard() {
+    document.getElementById('auditWizardModal').classList.add('hidden');
+    document.body.classList.remove('overflow-hidden');
+  }
+
+  function selectIndustry(val) {
+    auditData.industry = val;
+    goToAuditStep(2);
+  }
+
+  function selectHousing(val) {
+    auditData.housing = val;
+    goToAuditStep(3);
+  }
+
+  function goToAuditStep(step) {
+    auditStep = step;
+    document.getElementById('auditStep1').classList.add('hidden');
+    document.getElementById('auditStep2').classList.add('hidden');
+    document.getElementById('auditStep3').classList.add('hidden');
+    document.getElementById('auditResult').classList.add('hidden');
+
+    document.getElementById('auditStep' + step).classList.remove('hidden');
+  }
+
+  function submitAuditForm() {
+    auditData.shaft = document.getElementById('auditShaft').value || "30";
+    auditData.dust = document.getElementById('auditDust').value;
+    auditData.wet = document.getElementById('auditWet').value;
+    auditData.problem = document.getElementById('auditProblem').value;
+
+    document.getElementById('auditStep3').classList.add('hidden');
+    const loadingEl = document.getElementById('auditLoading');
+    loadingEl.classList.remove('hidden');
+
+    // Simulate AI synthesis delay for authenticity
+    setTimeout(() => {
+      loadingEl.classList.add('hidden');
+      generateAuditReport();
+    }, 1500);
+  }
+
+  function generateAuditReport() {
+    document.getElementById('auditResult').classList.remove('hidden');
+    
+    const recTitle = document.getElementById('auditRecTitle');
+    const recDesc = document.getElementById('auditRecDesc');
+    const recSpecs = document.getElementById('auditRecSpecs');
+    const recGost = document.getElementById('auditRecGost');
+
+    // Smart logic matching recommend bearings based on inputs
+    if (auditData.industry === 'mining' || auditData.dust === 'extreme') {
+      recTitle.innerHTML = 'HHB 223' + (parseInt(auditData.shaft) > 50 ? '18' : '15') + '-E1-T41A Vibrating Series';
+      recGost.textContent = '3615 / 3618 (Аналог FAG EMA / SKF VA405)';
+      recDesc.textContent = `Для тяжелых виброгрохотов и ударных карьерных дробилок с валом ${auditData.shaft} мм. Спец-серия T41A выдерживает нагрузки до 3.2g благодаря усиленному латунному сепаратору с центрированием по роликам.`;
+      recSpecs.innerHTML = `<li>✔ Класс вибрационной стойкости T41A</li><li>✔ Усиленный массивный латунный сепаратор</li><li>✔ Увеличенный ресурс работы под вибрацией в 3.5 раза</li>`;
+    } else if (auditData.wet === 'water' || auditData.industry === 'food') {
+      recTitle.innerHTML = `HHB STAINLESS UC${parseInt(auditData.shaft) > 35 ? '208' : '204'} + сульфонат-кальциевая смазка`;
+      recGost.textContent = `SS480204 / SS480208 (Водонепроницаемая серия)`;
+      recDesc.textContent = `Специализированная серия из нержавеющей стали класса AISI 440C в комбинации с влагостойкими уплотнительными кольцами. Смазка на основе сульфоната кальция не вымывается водой и моющими дезрастворами.`;
+      recSpecs.innerHTML = `<li>✔ Полная защита от коррозии при влажности до 100%</li><li>✔ Двойные контурные уплотнения (Waterproof)</li><li>✔ Пищевой допуск смазочного материала</li>`;
+    } else {
+      // standard agricultural/elevator recommendation
+      recTitle.innerHTML = `HHB UCP ${parseInt(auditData.shaft) > 35 ? '208' : '206'} с тройным уплотнением LS3`;
+      recGost.textContent = `480206 / 480208 (Аналог FKL / SKF)`;
+      recDesc.textContent = `Оптимальное решение для норийных приводов и элеваторных конвейеров с валом ${auditData.shaft} мм. Трехгубчатое контактное уплотнение серии LS3 гарантирует 100% герметичность, предотвращая попадание мелкой зерновой пыли внутрь подшипника.`;
+      recSpecs.innerHTML = `<li>✔ Трехкромочное уплотнение повышенной защиты LS3</li><li>✔ Усиленная чугунная отливка корпуса UCP</li><li>✔ Наполнен агропылевой смазкой HHB-AG Premium</li>`;
+    }
+  }
+
   /* ========== START ========== */
   preloadFrames(() => {
     // Force scroll back to top upon load/refresh to ensure Hero canvas opens on load
@@ -1007,6 +1123,159 @@
     }
     loop();
   });
+</script>
+
+<!-- MODAL: DIGITAL AUDIT BRIEFCASE (ЦИФРОВОЙ ЧЕМОДАНЧИК) -->
+<div id="auditWizardModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div onclick="closeAuditWizard()" class="absolute inset-0 bg-black/70 backdrop-blur-sm"></div>
+  <div class="relative bg-neutral-900 border border-white/10 rounded-3xl shadow-2xl max-w-2xl w-full p-6 md:p-8 text-white z-10 overflow-y-auto max-h-[90vh]">
+    <button onclick="closeAuditWizard()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white flex items-center justify-center font-bold">✕</button>
+
+    <!-- Header info -->
+    <div class="border-b border-white/5 pb-4 mb-6">
+      <div class="inline-flex items-center gap-2 rounded-full bg-hhb/20 text-hhb px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+        Цифровой Чемоданчик HHB
+      </div>
+      <h3 class="text-xl font-bold font-bebas tracking-wide mt-1 text-white">ИИ-Диагностика и Аудит подшипниковых узлов</h3>
+      <p class="text-xs text-neutral-400">Автоматический подбор конструктивного решения на основе нагрузок и условий среды</p>
+    </div>
+
+    <!-- Step 1: Industry -->
+    <div id="auditStep1" class="space-y-4">
+      <div class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-2">Шаг 1 из 3: Выберите отрасль эксплуатации оборудования</div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <button onclick="selectIndustry('agro')" class="p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-hhb hover:bg-white/10 text-left transition flex items-center gap-3">
+          <span class="text-2xl">🌾</span>
+          <div><div class="font-bold text-sm">Сельхозтехника (АПК)</div><div class="text-[10px] text-neutral-400 font-medium">Дискаторы, сеялки, комбайны</div></div>
+        </button>
+        <button onclick="selectIndustry('elevator')" class="p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-hhb hover:bg-white/10 text-left transition flex items-center gap-3">
+          <span class="text-2xl">🪵</span>
+          <div><div class="font-bold text-sm">Зерноочистка и элеваторы</div><div class="text-[10px] text-neutral-400 font-medium">Нории, скребковые транспортеры</div></div>
+        </button>
+        <button onclick="selectIndustry('food')" class="p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-hhb hover:bg-white/10 text-left transition flex items-center gap-3">
+          <span class="text-2xl">🏭</span>
+          <div><div class="font-bold text-sm">Пищевая переработка</div><div class="text-[10px] text-neutral-400 font-medium">МЭЗы, сахарные заводы, мука</div></div>
+        </button>
+        <button onclick="selectIndustry('mining')" class="p-4 rounded-2xl border border-white/5 bg-white/5 hover:border-hhb hover:bg-white/10 text-left transition flex items-center gap-3">
+          <span class="text-2xl">⛰️</span>
+          <div><div class="font-bold text-sm">Карьеры и ГОКи (Тяжпром)</div><div class="text-[10px] text-neutral-400 font-medium">Грохоты, щековые дробилки</div></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Step 2: Geometry & housing -->
+    <div id="auditStep2" class="hidden space-y-6">
+      <div class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Шаг 2 из 3: Геометрические параметры вала и узла</div>
+      
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-2">Диаметр посадочного вала (d, мм)</label>
+          <input id="auditShaft" type="number" value="30" class="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-hhb" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-2">Форма корпуса подшипникового узла</label>
+          <select id="auditForm" class="w-full rounded-xl bg-neutral-800 border border-white/10 px-4 py-3 text-sm text-white outline-none focus:border-hhb">
+            <option value="UCP">UCP (На лапах, двухболтовый)</option>
+            <option value="UCF">UCF (Квадратный фланцевый, четырехболтовый)</option>
+            <option value="UCFL">UCFL (Ромбический фланцевый, двухболтовый)</option>
+            <option value="UCT">UCT (Натяжной узел нории в салазках)</option>
+            <option value="spherical">Свободный подшипник без корпуса</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="border-t border-white/5 pt-4 flex gap-3">
+        <button onclick="goToAuditStep(1)" class="rounded-xl border border-white/20 px-5 py-3 text-xs font-bold uppercase transition hover:bg-white/5">Назад</button>
+        <button onclick="goToAuditStep(3)" class="flex-1 rounded-xl bg-hhb hover:bg-hhb-dark text-white text-xs py-3 font-bold uppercase transition">Продолжить</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Environment & Stress Factors -->
+    <div id="auditStep3" class="hidden space-y-5">
+      <div class="text-xs font-bold text-neutral-400 uppercase tracking-wider">Шаг 3 из 3: Условия среды и критические проблемы</div>
+      
+      <div class="grid sm:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1.5">Пыль и загрязнение</label>
+          <select id="auditDust" class="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2.5 text-xs text-white outline-none focus:border-hhb">
+            <option value="low">Низкое (Закрытый цех)</option>
+            <option value="medium">Среднее (Земля, почва)</option>
+            <option value="extreme">Экстремальное (Зернопыль, песок)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1.5">Влажность и химия</label>
+          <select id="auditWet" class="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2.5 text-xs text-white outline-none focus:border-hhb">
+            <option value="dry">Сухая среда</option>
+            <option value="wet">Повышенная (Улица)</option>
+            <option value="water">Прямая вода / Мойка</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-neutral-300 mb-1.5">Главная проблема</label>
+          <select id="auditProblem" class="w-full rounded-xl bg-neutral-800 border border-white/10 px-3 py-2.5 text-xs text-white outline-none focus:border-hhb">
+            <option value="lifetime">Дешевый аналог быстро ломается</option>
+            <option value="import">Импортозамещение (SKF/FAG)</option>
+            <option value="temp">Высокая температура / Нагрев</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="border-t border-white/5 pt-4 flex gap-3">
+        <button onclick="goToAuditStep(2)" class="rounded-xl border border-white/20 px-5 py-3 text-xs font-bold uppercase transition hover:bg-white/5">Назад</button>
+        <button onclick="submitAuditForm()" class="flex-1 rounded-xl bg-hhb hover:bg-hhb-dark text-white text-xs py-3 font-bold uppercase transition">Запустить анализ ИИ</button>
+      </div>
+    </div>
+
+    <!-- Loading Animation -->
+    <div id="auditLoading" class="hidden flex flex-col items-center justify-center py-12">
+      <div class="w-12 h-12 rounded-full border-4 border-hhb/30 border-t-hhb animate-spin"></div>
+      <div class="mt-4 text-xs font-semibold tracking-wide text-neutral-300 animate-pulse">ИИ-алгоритм рассчитывает ресурс подшипника под Ваши условия среды...</div>
+    </div>
+
+    <!-- AI Output: recommendation report sheet -->
+    <div id="auditResult" class="hidden space-y-6">
+      <div class="bg-white/5 rounded-2xl border border-white/10 p-5 space-y-4">
+        <div class="flex items-center justify-between border-b border-white/5 pb-3">
+          <div>
+            <div class="text-[9px] font-bold text-hhb uppercase tracking-wider">ИИ ТЕХНИЧЕСКОЕ РЕШЕНИЕ HHB</div>
+            <h4 id="auditRecTitle" class="text-xl font-bold font-bebas text-white tracking-wide mt-0.5"></h4>
+          </div>
+          <span class="rounded bg-green-500/10 border border-green-500/20 text-green-400 px-2 py-0.5 text-[9px] font-bold uppercase">Рекомендовано</span>
+        </div>
+
+        <div class="space-y-2">
+          <div class="text-xs text-neutral-400 font-bold uppercase tracking-wider">Техническое описание:</div>
+          <p id="auditRecDesc" class="text-xs text-neutral-300 leading-relaxed"></p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 text-xs pt-2">
+          <div>
+            <div class="text-neutral-500 font-bold text-[9px] uppercase tracking-wider">ГОСТ / Аналог:</div>
+            <div id="auditRecGost" class="text-white font-semibold mt-0.5"></div>
+          </div>
+          <div>
+            <div class="text-neutral-500 font-bold text-[9px] uppercase tracking-wider">Ресурс прочности HHB к обычному:</div>
+            <div class="text-emerald-400 font-bold mt-0.5">Увеличен в 2.8 - 3.5 раза</div>
+          </div>
+        </div>
+
+        <div class="border-t border-white/5 pt-3">
+          <div class="text-xs text-neutral-400 font-bold uppercase tracking-wider mb-2">Спецификация уплотнений и смазки HHB:</div>
+          <ul id="auditRecSpecs" class="space-y-1 text-xs text-neutral-300 font-medium">
+            <!-- Dynamic specs list -->
+          </ul>
+        </div>
+      </div>
+
+      <div class="flex gap-3">
+        <button onclick="closeAuditWizard()" class="rounded-xl border border-white/20 px-5 py-3.5 text-xs font-bold uppercase transition hover:bg-white/5">Закрыть</button>
+        <button onclick="alert('Спасибо! Отчет отправлен дежурному инженеру Компонент Сервис. С Вами свяжутся с детальным КП.'); closeAuditWizard();" class="flex-1 rounded-xl bg-hhb hover:bg-hhb-dark text-white text-xs py-3.5 font-bold uppercase tracking-wider transition shadow-lg shadow-hhb/10">Запросить цены и чертеж</button>
+      </div>
+    </div>
+
+  </div>
+</div>
 </script>
 </body>
 </html>

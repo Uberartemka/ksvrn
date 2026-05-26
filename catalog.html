@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Каталог HHB / FKD — Подшипники из 1С</title>
+<title>Каталог подшипников HHB / FKD — Купить в Воронеже</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.tailwindcss.com"></script>
@@ -25,9 +25,10 @@
 </script>
 <style>
   body { font-family: 'Jost', sans-serif; background: #fff; color: #0B0D10; }
+  .active-cat { background: #C8102E; color: white !important; }
 </style>
 </head>
-<body class="antialiased flex flex-col min-h-screen">
+<body class="antialiased flex flex-col min-h-screen bg-slate-50">
 
 <!-- HEADER -->
 <header id="header" class="fixed top-0 inset-x-0 z-50 bg-neutral-950/90 backdrop-blur shadow-sm border-b border-white/10 py-4">
@@ -53,77 +54,103 @@
   </div>
 </header>
 
-<main class="flex-1 pt-24 bg-neutral-50 pb-20">
+<main class="flex-1 pt-24 pb-20">
   <div class="mx-auto max-w-7xl px-6">
     
     <!-- Title & Top Meta -->
     <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200 pb-6 mb-8 gap-4">
       <div>
-        <div class="text-xs font-bold tracking-widest text-hhb mb-2 uppercase">1С:Управление Торговлей · Синхронизировано</div>
-        <h1 class="text-4xl font-extrabold font-bebas tracking-wide text-neutral-900">Каталог подшипников HHB & FKD</h1>
-        <p class="text-xs text-neutral-500 mt-1">Показано 8 позиций из 4 582 доступных на складе в Воронеже, Липецке и Краснодаре</p>
+        <div class="text-xs font-bold tracking-widest text-hhb mb-2 uppercase">Официальный дистрибьютор Hebei Hailan в РФ</div>
+        <h1 class="text-4xl font-extrabold font-bebas tracking-wide text-neutral-900">Инженерный Каталог HHB & FKD</h1>
+        <p class="text-xs text-neutral-500 mt-1">Подбор по ГОСТ, ISO, размерам (d x D x B) и условиям эксплуатации в Воронеже</p>
       </div>
       <div class="text-xs text-neutral-600 bg-white border border-neutral-200 px-4 py-2.5 rounded-xl shadow-sm font-semibold shrink-0">
-        ● Обновлено: 3 мин. назад
+        ● Обновлено из 1С: сегодня в 17:15
       </div>
     </div>
 
-    <!-- Inner Layout -->
+    <!-- Inner Layout (Podshipniki36-style) -->
     <div class="grid lg:grid-cols-4 gap-8">
       
-      <!-- SIDEBAR FILTERS (DESIGN) -->
+      <!-- SIDEBAR DIRECTORIES & FILTERS -->
       <aside class="space-y-6">
+        
+        <!-- Category tree (Podshipniki36 style) -->
+        <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+          <div class="bg-neutral-900 text-white px-5 py-4 font-bebas tracking-wider text-base uppercase">Разделы каталога</div>
+          <div class="p-2 space-y-1">
+            <button onclick="filterByCategory('all')" id="cat-all" class="w-full text-left text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-xl transition hover:bg-neutral-100 active-cat">Все категории</button>
+            <button onclick="filterByCategory('housing')" id="cat-housing" class="w-full text-left text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-xl transition hover:bg-neutral-100 text-neutral-600">📦 Корпусные подшипники и узлы</button>
+            <button onclick="filterByCategory('ball')" id="cat-ball" class="w-full text-left text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-xl transition hover:bg-neutral-100 text-neutral-600">🔵 Шариковые радиальные</button>
+            <button onclick="filterByCategory('roller')" id="cat-roller" class="w-full text-left text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-xl transition hover:bg-neutral-100 text-neutral-600">⛰️ Сферические роликовые</button>
+            <button onclick="filterByCategory('stainless')" id="cat-stainless" class="w-full text-left text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-xl transition hover:bg-neutral-100 text-neutral-600">💧 Нержавеющая серия (Stainless)</button>
+            <button onclick="filterByCategory('cuffs')" id="cat-cuffs" class="w-full text-left text-xs font-bold uppercase tracking-wider px-4 py-3 rounded-xl transition hover:bg-neutral-100 text-neutral-600">🍩 Сальники & Манжеты</button>
+          </div>
+        </div>
+
+        <!-- Technical Size Filter -->
         <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-5">
-          <h3 class="text-base font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-2">Фильтры</h3>
-          
-          <!-- Search input -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Поиск по SKU</label>
-            <input type="text" placeholder="Введите маркировку..." class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-3 py-2.5 text-xs outline-none focus:border-hhb" />
-          </div>
-
-          <!-- Brand filter -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Бренд продукции</label>
-            <div class="space-y-2">
-              <label class="flex items-center gap-2 text-xs font-semibold text-neutral-700">
-                <input type="checkbox" checked class="rounded text-hhb focus:ring-hhb" /> HHB Premium
-              </label>
-              <label class="flex items-center gap-2 text-xs font-semibold text-neutral-700">
-                <input type="checkbox" checked class="rounded text-hhb focus:ring-hhb" /> FKD Standard
-              </label>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-2">Поиск по размерам</h3>
+          <div class="grid grid-cols-3 gap-2">
+            <div>
+              <label class="block text-[9px] font-bold text-neutral-500 uppercase mb-1">d (внутр.)</label>
+              <input id="filter-d" type="text" placeholder="25" class="w-full rounded-lg bg-neutral-50 border border-neutral-200 p-2 text-center text-xs font-semibold outline-none focus:border-hhb" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-neutral-500 uppercase mb-1">D (наруж.)</label>
+              <input id="filter-D" type="text" placeholder="52" class="w-full rounded-lg bg-neutral-50 border border-neutral-200 p-2 text-center text-xs font-semibold outline-none focus:border-hhb" />
+            </div>
+            <div>
+              <label class="block text-[9px] font-bold text-neutral-500 uppercase mb-1">B (ширина)</label>
+              <input id="filter-B" type="text" placeholder="15" class="w-full rounded-lg bg-neutral-50 border border-neutral-200 p-2 text-center text-xs font-semibold outline-none focus:border-hhb" />
             </div>
           </div>
-
-          <!-- Category filter -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Категория</label>
-            <div class="space-y-2 text-xs font-semibold text-neutral-700">
-              <label class="flex items-center gap-2"><input type="checkbox" checked class="rounded text-hhb" /> Корпусные узлы (UCP, UCF)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Шариковые радиальные</label>
-              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Роликовые сферические</label>
-              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Нержавеющая серия</label>
-              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Сельскохозяйственная серия</label>
-            </div>
+          <div class="flex gap-2">
+            <button onclick="applySizeFilter()" class="flex-1 bg-neutral-900 hover:bg-black text-white text-[10px] font-bold py-2 rounded-lg uppercase tracking-wider transition">Применить</button>
+            <button onclick="resetSizeFilter()" class="bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-[10px] font-bold px-3 py-2 rounded-lg uppercase tracking-wider transition">Сброс</button>
           </div>
+        </div>
 
-          <!-- Availability -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Наличие</label>
-            <div class="space-y-2 text-xs font-semibold text-neutral-700">
-              <label class="flex items-center gap-2"><input type="checkbox" checked class="rounded text-hhb" /> В наличии на складе</label>
-              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Под заказ (5-7 дней)</label>
-            </div>
+        <!-- Contact Support Card (podshipniki36-style) -->
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm text-center space-y-4">
+          <div class="w-10 h-10 rounded-full bg-hhb/10 text-hhb flex items-center justify-center mx-auto">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.79 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
           </div>
+          <div class="text-xs font-bold text-neutral-800">Не нашли нужный размер?</div>
+          <p class="text-[11px] text-neutral-500">Инженер КС проверит склад и подберет аналог в момент обращения!</p>
+          <div class="text-sm font-extrabold text-hhb">+7 (473) 255-00-00</div>
         </div>
       </aside>
 
-      <!-- PRODUCT LIST WITH PLACEHOLDER COVER -->
-      <div class="lg:col-span-3 space-y-8">
+      <!-- MAIN SEARCH & TABULAR RESULTS -->
+      <div class="lg:col-span-3 space-y-6">
         
-        <!-- Grid of 8 loaded products -->
-        <div id="catalogGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <!-- Dynamically populated via JS below -->
+        <!-- Live Search Bar -->
+        <div class="bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm flex items-center gap-3">
+          <svg class="w-5 h-5 text-neutral-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>
+          </svg>
+          <input id="mainSearch" type="text" oninput="liveSearch()" placeholder="Быстрый поиск по ГОСТ, ISO, или размерам (например: '6205', 'UCP206', '25x52')..." class="w-full text-sm outline-none font-semibold text-neutral-800 placeholder-neutral-400" />
+        </div>
+
+        <!-- Dense B2B Specifications Table (Podshipniki36-style) -->
+        <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-neutral-900 text-white font-bebas text-sm tracking-wider uppercase border-b border-neutral-200">
+              <tr>
+                <th class="px-5 py-3.5">Артикул / Наименование</th>
+                <th class="px-4 py-3.5 text-center">ГОСТ / ГОСТ-Аналог</th>
+                <th class="px-4 py-3.5 text-center font-sans text-[11px] font-bold">d x D x B (мм)</th>
+                <th class="px-4 py-3.5 text-center">Бренд</th>
+                <th class="px-4 py-3.5 text-center">Наличие</th>
+                <th class="px-4 py-3.5 text-right">Цена (с НДС)</th>
+                <th class="px-5 py-3.5 text-center">Спецификация</th>
+              </tr>
+            </thead>
+            <tbody id="catalog-table-body" class="divide-y divide-neutral-100 font-medium">
+              <!-- Dynamically populated via JS -->
+            </tbody>
+          </table>
         </div>
 
         <!-- Heavy B2B lock / 1C Synchronization Placeholder -->
@@ -137,7 +164,7 @@
               <path d="M7 11V7a5 5 0 0110 0v4"/>
             </svg>
           </div>
-          <h3 class="text-2xl font-bold font-bebas tracking-wide text-neutral-800">🔒 Остальные 4 574 позиции скрыты</h3>
+          <h3 class="text-2xl font-bold font-bebas tracking-wide text-neutral-800">🔒 Остальные 4 570 позиций скрыты</h3>
           <p class="mt-3 text-sm text-neutral-500 max-w-2xl mx-auto leading-relaxed">
             В соответствии с ценовой политикой HEBEI HAILAN BEARING, оптовые дилерские цены и полные спецификации всего складского запаса (включая посадочные зазоры, типы смазок и чертежи) доступны только для зарегистрированных B2B-партнеров.
           </p>
@@ -164,42 +191,219 @@
   </div>
 </main>
 
-<!-- FOOTER -->
-<footer class="bg-ink-900 text-white/70 py-12">
-  <div class="mx-auto max-w-7xl px-6 text-center text-xs">
-    © HHB.RU 2026. Политика конфиденциальности. Эксклюзивный дистрибьютор подшипников HHB и FKD в РФ.
+<!-- MODAL: DETAILED PRODUCT SPECIFICATIONS (podshipniki36-style) -->
+<div id="specModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div onclick="closeSpecModal()" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+  <div class="relative bg-white rounded-3xl shadow-2xl border border-neutral-200 max-w-3xl w-full p-6 md:p-8 grid md:grid-cols-2 gap-6 overflow-hidden z-10">
+    <button onclick="closeSpecModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-neutral-100 text-neutral-500 hover:text-black flex items-center justify-center font-bold">✕</button>
+    
+    <!-- Image Box -->
+    <div class="flex flex-col justify-between space-y-4">
+      <div class="aspect-square bg-slate-100 rounded-2xl p-4 flex items-center justify-center overflow-hidden border border-neutral-100">
+        <img id="modalImg" src="" class="w-full h-full object-contain rounded-xl" />
+      </div>
+      <div class="text-[10px] text-neutral-400 font-bold uppercase tracking-wider text-center">Оригинальное фото Hebei Hailan Bearing Co.</div>
+    </div>
+
+    <!-- Specs Sheet -->
+    <div class="space-y-4 flex flex-col justify-between">
+      <div>
+        <div class="text-[10px] font-bold text-hhb uppercase tracking-widest">СПЕЦИФИКАЦИЯ ТОВАРА</div>
+        <h3 id="modalSku" class="text-2xl font-extrabold text-neutral-900 tracking-wide font-bebas mt-1"></h3>
+        <p id="modalType" class="text-xs text-neutral-500 font-medium"></p>
+        
+        <!-- Table -->
+        <div class="mt-4 border border-neutral-200 rounded-xl overflow-hidden text-xs">
+          <div class="grid grid-cols-2 bg-slate-50 border-b border-neutral-200 p-2.5">
+            <span class="font-semibold text-neutral-500">Внутренний d (мм)</span>
+            <span id="modalD_in" class="font-extrabold text-neutral-800 text-right"></span>
+          </div>
+          <div class="grid grid-cols-2 border-b border-neutral-200 p-2.5">
+            <span class="font-semibold text-neutral-500">Наружный D (мм)</span>
+            <span id="modalD_out" class="font-extrabold text-neutral-800 text-right"></span>
+          </div>
+          <div class="grid grid-cols-2 bg-slate-50 border-b border-neutral-200 p-2.5">
+            <span class="font-semibold text-neutral-500">Ширина B (мм)</span>
+            <span id="modalWidth" class="font-extrabold text-neutral-800 text-right"></span>
+          </div>
+          <div class="grid grid-cols-2 border-b border-neutral-200 p-2.5">
+            <span class="font-semibold text-neutral-500">ГОСТ / Аналог</span>
+            <span id="modalGost" class="font-extrabold text-neutral-800 text-right"></span>
+          </div>
+          <div class="grid grid-cols-2 bg-slate-50 p-2.5">
+            <span class="font-semibold text-neutral-500">Бренд завода</span>
+            <span id="modalBrand" class="font-extrabold text-hhb text-right uppercase"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex items-center justify-between border-t border-neutral-100 pt-4">
+          <div>
+            <div class="text-[10px] text-neutral-400 font-bold uppercase">Цена с НДС</div>
+            <div id="modalPrice" class="text-2xl font-extrabold text-neutral-900 font-bebas mt-0.5"></div>
+          </div>
+          <div class="text-right">
+            <div class="text-[10px] text-neutral-400 font-bold uppercase">Склад Воронеж</div>
+            <div id="modalStock" class="text-sm font-bold text-emerald-600 mt-0.5">● В наличии</div>
+          </div>
+        </div>
+        <button onclick="alert('Заявка на этот подшипник успешно сформирована. С вами свяжется менеджер КС.')" class="w-full bg-hhb hover:bg-hhb-dark text-white text-xs py-3 rounded-xl font-bold uppercase tracking-widest transition">Купить / Заказать КП</button>
+      </div>
+    </div>
   </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-neutral-900 text-white/50 py-12 text-center text-xs">
+  © HHB.RU 2026. Политика конфиденциальности. Эксклюзивный дистрибьютор Hebei Hailan в РФ · ООО "Компонент Сервис"
 </footer>
 
 <script>
-  const products = [
-    { sku: 'HHB UCP 206', type: 'Pillow Block Housing Unit (Корпусной узел)', price: '1 180 ₽', stock: 86, img: 'images/ucp.jpg' },
-    { sku: 'HHB UCF 208', type: 'Square Flanged Housing Unit (Фланцевый квадратный)', price: '1 420 ₽', stock: 140, img: 'images/ucf.jpg' },
-    { sku: 'HHB UCFL 205', type: 'Rhombic Flanged Housing Unit (Фланцевый ромбический)', price: '980 ₽', stock: 320, img: 'images/ucfl.jpg' },
-    { sku: 'HHB UCT 207', type: 'Take-up Housing Unit (Натяжной узел нории)', price: '1 850 ₽', stock: 54, img: 'images/uct.jpg' },
-    { sku: 'HHB STAINLESS UC 204', type: 'Stainless Steel Waterproof Series (Нержавеющая сталь)', price: '2 950 ₽', stock: 18, img: 'images/stainless.jpg' },
-    { sku: 'FKD UK 208 + H2308', type: 'Adapter Sleeve Tapered Bore Series (С конической втулкой)', price: '1 620 ₽', stock: 95, img: 'images/uk.jpg' },
-    { sku: 'FKD NA 206', type: 'Eccentric Locking Collar Insert (С эксцентриковым кольцом)', price: '730 ₽', stock: 110, img: 'images/na.jpg' },
-    { sku: 'HHB 22315-E1-T41A', type: 'Spherical Roller Vibrating Screen Series (Для виброгрохотов)', price: '7 950 ₽', stock: 12, img: 'images/spherical.jpg' }
+  // High-fidelity database of HHB/FKD items (Podshipniki36-style)
+  const bearingDatabase = [
+    { sku: 'HHB UCP 206', category: 'housing', gost: '480206', d: 30, D: 62, B: 38.1, type: 'Корпусной узел на лапах (Pillow Block)', brand: 'HHB', stock: 'Достаточно', price: '1 180 ₽', img: 'images/ucp.jpg' },
+    { sku: 'HHB UCF 208', category: 'housing', gost: '480208', d: 40, D: 80, B: 49.2, type: 'Квадратный фланцевый узел (Flange Block)', brand: 'HHB', stock: 'Достаточно', price: '1 420 ₽', img: 'images/ucf.jpg' },
+    { sku: 'HHB UCFL 205', category: 'housing', gost: '480205', d: 25, D: 52, B: 34.1, type: 'Ромбический фланцевый узел (2-bolt Flange)', brand: 'HHB', stock: 'Достаточно', price: '980 ₽', img: 'images/ucfl.jpg' },
+    { sku: 'HHB UCT 207', category: 'housing', gost: '480207', d: 35, D: 72, B: 42.9, type: 'Натяжной узел для нории (Take-up Unit)', brand: 'HHB', stock: 'В наличии', price: '1 850 ₽', img: 'images/uct.jpg' },
+    { sku: 'HHB STAINLESS UC 204', category: 'stainless', gost: 'SS480204', d: 20, D: 47, B: 31, type: 'Нержавеющая сталь (Stainless Series)', brand: 'HHB', stock: '18 шт', price: '2 950 ₽', img: 'images/stainless.jpg' },
+    { sku: 'FKD UK 208 + H2308', category: 'housing', gost: 'UK208', d: 35, D: 80, B: 49, type: 'С конической закрепительной втулкой', brand: 'FKD', stock: '95 шт', price: '1 620 ₽', img: 'images/uk.jpg' },
+    { sku: 'FKD NA 206', category: 'housing', gost: 'NA206', d: 30, D: 62, B: 36.4, type: 'С эксцентриковым стопорным кольцом', brand: 'FKD', stock: 'Достаточно', price: '730 ₽', img: 'images/na.jpg' },
+    { sku: 'HHB 22315-E1-T41A', category: 'roller', gost: '3615', d: 75, D: 160, B: 55, type: 'Сферический роликовый для виброгрохотов', brand: 'HHB', stock: '12 шт', price: '7 950 ₽', img: 'images/spherical.jpg' },
+    
+    // Additional items to make the table comprehensive (just like podshipniki36)
+    { sku: 'HHB 6205-2RS C3', category: 'ball', gost: '180205', d: 25, D: 52, B: 15, type: 'Радиальный шариковый с увеличенным зазором', brand: 'HHB', stock: '1 240 шт', price: '420 ₽', img: 'frames_eevee/mobile_webp/0060.webp' },
+    { sku: 'HHB 6206-2RS C3', category: 'ball', gost: '180206', d: 30, D: 62, B: 16, type: 'Радиальный шариковый с зазором C3', brand: 'HHB', stock: '850 шт', price: '540 ₽', img: 'frames_eevee/mobile_webp/0060.webp' },
+    { sku: 'FKD UC 210', category: 'housing', gost: '480210', d: 50, D: 90, B: 51.6, type: 'Шариковый радиальный под закрепительный винт', brand: 'FKD', stock: '320 шт', price: '690 ₽', img: 'images/ucp.jpg' },
+    { sku: 'Сальник 30х52х10 (Манжета)', category: 'cuffs', gost: '8752-79', d: 30, D: 52, B: 10, type: 'Армированная одновальная манжета ГОСТ', brand: 'FKD', stock: 'Достаточно', price: '180 ₽', img: 'frames_eevee/mobile_webp/0060.webp' }
   ];
 
-  const grid = document.getElementById('catalogGrid');
-  grid.innerHTML = products.map(p => `
-    <div class="group rounded-2xl bg-white p-5 border border-neutral-200 hover:border-hhb hover:shadow-lg transition flex flex-col justify-between">
-      <div>
-        <div class="aspect-square rounded-xl bg-neutral-100 mb-4 flex items-center justify-center overflow-hidden p-2">
-          <img src="${p.img}" class="w-full h-full object-contain group-hover:scale-105 transition rounded-lg" alt="${p.sku}" onerror="this.src='frames_eevee/mobile_webp/0060.webp'" />
-        </div>
-        <div class="text-xs font-bold tracking-widest text-hhb">${p.sku.startsWith('FKD') ? 'FKD' : 'HHB'}</div>
-        <div class="font-bold mt-1 text-sm text-neutral-900">${p.sku}</div>
-        <div class="text-[11px] text-neutral-500 mt-1 leading-normal font-medium">${p.type}</div>
-      </div>
-      <div class="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between">
-        <div class="font-extrabold text-neutral-900 text-base">${p.price}</div>
-        <div class="text-xs text-green-600 font-semibold">● ${p.stock} шт</div>
-      </div>
-    </div>
-  `).join('');
+  let activeCategory = 'all';
+
+  function renderTable(data) {
+    const tbody = document.getElementById('catalog-table-body');
+    tbody.innerHTML = '';
+
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="py-12 text-center text-neutral-500 font-semibold text-xs">Позиций с такими параметрами не найдено в 1С. Попробуйте сбросить фильтры.</td></tr>`;
+      return;
+    }
+
+    data.forEach(item => {
+      const isHhb = item.brand === 'HHB';
+      const brandClass = isHhb ? 'bg-hhb/10 text-hhb border-hhb/20' : 'bg-slate-200 text-neutral-700 border-neutral-300';
+      const stockClass = item.stock.includes('шт') ? 'text-neutral-800' : 'text-green-600';
+
+      tbody.innerHTML += `
+        <tr class="hover:bg-neutral-100/50 transition cursor-pointer border-b border-neutral-100" onclick="openSpecModal('${item.sku}')">
+          <td class="px-5 py-4">
+            <div class="font-bold text-neutral-800 text-[13px]">${item.sku}</div>
+            <div class="text-[10px] text-neutral-400 font-medium mt-0.5">${item.type}</div>
+          </td>
+          <td class="px-4 py-4 text-center font-bold text-neutral-600 text-[11px]">${item.gost}</td>
+          <td class="px-4 py-4 text-center font-extrabold text-neutral-800 text-[12px]">${item.d} x ${item.D} x ${item.B}</td>
+          <td class="px-4 py-4 text-center">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold border uppercase ${brandClass}">${item.brand}</span>
+          </td>
+          <td class="px-4 py-4 text-center font-semibold text-[11px] ${stockClass}">● ${item.stock}</td>
+          <td class="px-4 py-4 text-right font-extrabold text-neutral-900 text-[13px]">${item.price}</td>
+          <td class="px-5 py-4 text-center">
+            <button class="bg-neutral-100 hover:bg-hhb hover:text-white text-neutral-800 rounded px-2.5 py-1 text-[10px] font-bold uppercase transition">Чертеж / Инфо</button>
+          </td>
+        </tr>
+      `;
+    });
+  }
+
+  /* ========== FILTER BY CATEGORY ========== */
+  function filterByCategory(category) {
+    activeCategory = category;
+    
+    // Toggle active classes on sidebar buttons
+    document.querySelectorAll('aside button').forEach(btn => {
+      btn.classList.remove('active-cat');
+      btn.classList.add('text-neutral-600');
+    });
+    document.getElementById('cat-' + category).classList.add('active-cat');
+    document.getElementById('cat-' + category).classList.remove('text-neutral-600');
+
+    applyAllFilters();
+  }
+
+  /* ========== SEARCH AND FILTERS INTEGRATION ========== */
+  function applyAllFilters() {
+    const searchVal = document.getElementById('mainSearch').value.toLowerCase().trim();
+    const dVal = document.getElementById('filter-d').value.trim();
+    const DVal = document.getElementById('filter-D').value.trim();
+    const BVal = document.getElementById('filter-B').value.trim();
+
+    let filtered = bearingDatabase;
+
+    // 1. Filter by category tree
+    if (activeCategory !== 'all') {
+      filtered = filtered.filter(item => item.category === activeCategory);
+    }
+
+    // 2. Filter by main keyword input
+    if (searchVal) {
+      filtered = filtered.filter(item => 
+        item.sku.toLowerCase().includes(searchVal) ||
+        item.gost.toLowerCase().includes(searchVal) ||
+        item.type.toLowerCase().includes(searchVal) ||
+        `${item.d}x${item.D}x${item.B}`.includes(searchVal)
+      );
+    }
+
+    // 3. Filter by size inputs
+    if (dVal) filtered = filtered.filter(item => String(item.d) === dVal);
+    if (DVal) filtered = filtered.filter(item => String(item.D) === DVal);
+    if (BVal) filtered = filtered.filter(item => String(item.B) === BVal);
+
+    renderTable(filtered);
+  }
+
+  function liveSearch() {
+    applyAllFilters();
+  }
+
+  function applySizeFilter() {
+    applyAllFilters();
+  }
+
+  function resetSizeFilter() {
+    document.getElementById('filter-d').value = '';
+    document.getElementById('filter-D').value = '';
+    document.getElementById('filter-B').value = '';
+    applyAllFilters();
+  }
+
+  /* ========== MODAL SPEC SHEET CONTROL ========== */
+  function openSpecModal(sku) {
+    const item = bearingDatabase.find(x => x.sku === sku);
+    if (!item) return;
+
+    document.getElementById('modalSku').textContent = item.sku;
+    document.getElementById('modalType').textContent = item.type;
+    document.getElementById('modalD_in').textContent = item.d + " мм";
+    document.getElementById('modalD_out').textContent = item.D + " мм";
+    document.getElementById('modalWidth').textContent = item.B + " мм";
+    document.getElementById('modalGost').textContent = item.gost;
+    document.getElementById('modalBrand').textContent = item.brand;
+    document.getElementById('modalPrice').textContent = item.price;
+    document.getElementById('modalImg').src = item.img;
+
+    const modalStock = document.getElementById('modalStock');
+    modalStock.textContent = "● " + item.stock;
+
+    document.getElementById('specModal').classList.remove('hidden');
+  }
+
+  function closeSpecModal() {
+    document.getElementById('specModal').classList.add('hidden');
+  }
+
+  // Initialize table
+  renderTable(bearingDatabase);
 </script>
 </body>
 </html>

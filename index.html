@@ -131,7 +131,7 @@
 </header>
 
 <!-- HERO: SCROLL-DRIVEN 3D STAGE (DESKTOP & MOBILE INTEGRATED) -->
-<section id="scroll-driver">
+<section id="scroll-driver" class="hidden md:block">
   <div id="stage">
     <div id="video-wrap">
       <canvas id="bearing-canvas"></canvas>
@@ -142,6 +142,34 @@
     </div>
     <!-- Scroll hint -->
     <div id="scroll-hint" class="absolute bottom-6 left-1/2 -translate-x-1/2 text-xs text-neutral-500 font-semibold tracking-widest animate-pulse z-10 transition-opacity duration-300">SCROLL ↓</div>
+  </div>
+</section>
+
+<!-- MOBILE HERO (Static, high performance, no lag) -->
+<section id="mobile-hero" class="block md:hidden bg-ink-900 text-white pt-28 pb-16 px-6 relative overflow-hidden">
+  <div class="absolute -top-20 -right-20 w-80 h-80 bg-hhb/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="relative z-10 text-center space-y-6">
+    <div class="inline-flex items-center gap-2 text-xs font-bold tracking-widest text-hhb uppercase">
+      <span class="w-6 h-px bg-hhb"></span> ЭКСКЛЮЗИВНЫЙ ДИСТРИБЬЮТОР В РФ
+    </div>
+    <h1 class="text-4xl font-extrabold font-bebas leading-[1.05] tracking-tight text-white">
+      Премиальные подшипники<br/>
+      <span class="text-hhb">HHB & FKD</span>
+    </h1>
+    <p class="text-sm text-neutral-400 max-w-sm mx-auto leading-relaxed">
+      Качество для тяжелой промышленности и агрохолдингов. Прямой контракт с заводом HEBEI HAILAN, отгрузка со склада в Воронеже за 1 день.
+    </p>
+    <div class="pt-2">
+      <img src="images/ucp.jpg" alt="HHB bearing" class="w-64 h-64 object-contain mx-auto rounded-2xl bg-white/5 border border-white/10 p-4 shadow-xl" />
+    </div>
+    <div class="flex flex-col gap-2.5 pt-4">
+      <a href="#ai" class="inline-flex items-center justify-center gap-2 rounded-xl bg-hhb text-white py-3.5 text-xs font-bold uppercase tracking-wider transition">
+        Умный подбор аналога
+      </a>
+      <a href="catalog.html" class="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 text-white py-3.5 text-xs font-bold uppercase tracking-wider transition">
+        Перейти в каталог
+      </a>
+    </div>
   </div>
 </section>
 
@@ -568,6 +596,12 @@
   window.addEventListener('resize', resizeCanvas);
 
   function preloadFrames(onReady) {
+    if (window.innerWidth <= 900) {
+      // Skip loading 120 heavy frames on mobile to maximize performance & speed
+      onReady();
+      return;
+    }
+
     for (let i = 0; i < TOTAL_FRAMES; i++) {
       const img = new Image();
       img.decoding = 'async';
@@ -627,6 +661,8 @@
   function easeOut(t) { return 1 - Math.pow(1 - t, 3); }
 
   function update() {
+    if (window.innerWidth <= 900) return; // Disable scroll calculations on mobile completely
+
     const scrollY = window.scrollY;
     const driverH = scrollDriver.offsetHeight;
     const vh      = window.innerHeight;

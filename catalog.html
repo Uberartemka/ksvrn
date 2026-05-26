@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Каталог HHB / FKD — Подшипники из 1С</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          hhb: { DEFAULT: '#C8102E', dark: '#8B0A20', light: '#FF3A56' },
+          ink: { 900: '#0B0D10', 800: '#14171C', 700: '#1F242C', 500: '#6B7280' },
+        },
+        fontFamily: {
+          sans: ['Jost', 'system-ui', 'sans-serif'],
+          bebas: ['Bebas Neue', 'sans-serif']
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'Jost', sans-serif; background: #fff; color: #0B0D10; }
+</style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+<!-- HEADER -->
+<header id="header" class="fixed top-0 inset-x-0 z-50 bg-neutral-950/90 backdrop-blur shadow-sm border-b border-white/10 py-4">
+  <div class="mx-auto max-w-7xl px-6 flex items-center justify-between">
+    <a href="index.html" class="flex items-center gap-2">
+      <span class="inline-block w-8 h-8 rounded-full bg-hhb"></span>
+      <span class="font-extrabold tracking-wide text-white font-bebas text-2xl">HHB<span class="text-hhb">.</span>RU</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-7 text-xs font-semibold uppercase tracking-wider text-neutral-400">
+      <a href="index.html#ai" class="hover:text-white transition">Умный подбор</a>
+      <a href="#" class="text-white">Каталог</a>
+      <a href="index.html#b2b" class="hover:text-white transition">B2B-экосистема</a>
+      <a href="index.html#industries" class="hover:text-white transition">Отрасли</a>
+      <a href="index.html#clients" class="hover:text-white transition">Клиенты</a>
+    </nav>
+    <div class="flex items-center gap-3">
+      <a href="admin.html" class="hidden sm:inline-flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-400 hover:text-white transition mr-2">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Панель менеджера
+      </a>
+      <a href="index.html#ai" class="inline-flex items-center rounded-sm border border-hhb/40 text-hhb px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-hhb hover:text-white transition">Оставить заявку</a>
+    </div>
+  </div>
+</header>
+
+<main class="flex-1 pt-24 bg-neutral-50 pb-20">
+  <div class="mx-auto max-w-7xl px-6">
+    
+    <!-- Title & Top Meta -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-neutral-200 pb-6 mb-8 gap-4">
+      <div>
+        <div class="text-xs font-bold tracking-widest text-hhb mb-2 uppercase">1С:Управление Торговлей · Синхронизировано</div>
+        <h1 class="text-4xl font-extrabold font-bebas tracking-wide text-neutral-900">Каталог подшипников HHB & FKD</h1>
+        <p class="text-xs text-neutral-500 mt-1">Показано 8 позиций из 4 582 доступных на складе в Воронеже, Липецке и Краснодаре</p>
+      </div>
+      <div class="text-xs text-neutral-600 bg-white border border-neutral-200 px-4 py-2.5 rounded-xl shadow-sm font-semibold shrink-0">
+        ● Обновлено: 3 мин. назад
+      </div>
+    </div>
+
+    <!-- Inner Layout -->
+    <div class="grid lg:grid-cols-4 gap-8">
+      
+      <!-- SIDEBAR FILTERS (DESIGN) -->
+      <aside class="space-y-6">
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-5">
+          <h3 class="text-base font-bold uppercase tracking-wider text-neutral-800 border-b border-neutral-100 pb-2">Фильтры</h3>
+          
+          <!-- Search input -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Поиск по SKU</label>
+            <input type="text" placeholder="Введите маркировку..." class="w-full rounded-xl bg-neutral-50 border border-neutral-200 px-3 py-2.5 text-xs outline-none focus:border-hhb" />
+          </div>
+
+          <!-- Brand filter -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Бренд продукции</label>
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 text-xs font-semibold text-neutral-700">
+                <input type="checkbox" checked class="rounded text-hhb focus:ring-hhb" /> HHB Premium
+              </label>
+              <label class="flex items-center gap-2 text-xs font-semibold text-neutral-700">
+                <input type="checkbox" checked class="rounded text-hhb focus:ring-hhb" /> FKD Standard
+              </label>
+            </div>
+          </div>
+
+          <!-- Category filter -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Категория</label>
+            <div class="space-y-2 text-xs font-semibold text-neutral-700">
+              <label class="flex items-center gap-2"><input type="checkbox" checked class="rounded text-hhb" /> Корпусные узлы (UCP, UCF)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Шариковые радиальные</label>
+              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Роликовые сферические</label>
+              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Нержавеющая серия</label>
+              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Сельскохозяйственная серия</label>
+            </div>
+          </div>
+
+          <!-- Availability -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Наличие</label>
+            <div class="space-y-2 text-xs font-semibold text-neutral-700">
+              <label class="flex items-center gap-2"><input type="checkbox" checked class="rounded text-hhb" /> В наличии на складе</label>
+              <label class="flex items-center gap-2"><input type="checkbox" class="rounded text-hhb" /> Под заказ (5-7 дней)</label>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- PRODUCT LIST WITH PLACEHOLDER COVER -->
+      <div class="lg:col-span-3 space-y-8">
+        
+        <!-- Grid of 8 loaded products -->
+        <div id="catalogGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Dynamically populated via JS below -->
+        </div>
+
+        <!-- Heavy B2B lock / 1C Synchronization Placeholder -->
+        <div class="bg-white border-2 border-dashed border-neutral-300 rounded-3xl p-8 md:p-12 text-center shadow-sm relative">
+          <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-hhb text-white text-[10px] font-bold uppercase tracking-widest px-4 py-1 rounded-full shadow-sm">
+            🔒 Ограничение доступа к оптовым ценам
+          </div>
+          <div class="w-14 h-12 rounded-full bg-hhb/10 text-hhb flex items-center justify-center mx-auto mb-4">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold font-bebas tracking-wide text-neutral-800">🔒 Остальные 4 574 позиции скрыты</h3>
+          <p class="mt-3 text-sm text-neutral-500 max-w-2xl mx-auto leading-relaxed">
+            В соответствии с ценовой политикой HEBEI HAILAN BEARING, оптовые дилерские цены и полные спецификации всего складского запаса (включая посадочные зазоры, типы смазок и чертежи) доступны только для зарегистрированных B2B-партнеров.
+          </p>
+          
+          <div class="mt-8 grid sm:grid-cols-2 gap-4 max-w-xl mx-auto text-left border-t border-neutral-100 pt-6">
+            <div class="flex gap-3 text-xs text-neutral-600">
+              <span class="text-hhb font-bold">✔</span>
+              <span>Моментальная выгрузка счетов с Вашими персональными скидками 10%-20%.</span>
+            </div>
+            <div class="flex gap-3 text-xs text-neutral-600">
+              <span class="text-hhb font-bold">✔</span>
+              <span>Интеграция по API с вашей внутренней ERP или СRM-системой.</span>
+            </div>
+          </div>
+
+          <div class="mt-8 flex flex-wrap justify-center gap-3">
+            <a href="index.html#ai" class="rounded-xl bg-hhb hover:bg-hhb-dark text-white px-6 py-3 text-xs font-bold uppercase tracking-wider transition">Получить B2B-доступ</a>
+            <a href="admin.html" class="rounded-xl bg-neutral-900 hover:bg-black text-white px-6 py-3 text-xs font-bold uppercase tracking-wider transition border border-neutral-800">Кабинет менеджера (Демо)</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-ink-900 text-white/70 py-12">
+  <div class="mx-auto max-w-7xl px-6 text-center text-xs">
+    © HHB.RU 2026. Политика конфиденциальности. Эксклюзивный дистрибьютор подшипников HHB и FKD в РФ.
+  </div>
+</footer>
+
+<script>
+  const products = [
+    { sku: 'HHB UCP 206', type: 'Pillow Block Housing Unit (Корпусной узел)', price: '1 180 ₽', stock: 86, img: 'images/ucp.jpg' },
+    { sku: 'HHB UCF 208', type: 'Square Flanged Housing Unit (Фланцевый квадратный)', price: '1 420 ₽', stock: 140, img: 'images/ucf.jpg' },
+    { sku: 'HHB UCFL 205', type: 'Rhombic Flanged Housing Unit (Фланцевый ромбический)', price: '980 ₽', stock: 320, img: 'images/ucfl.jpg' },
+    { sku: 'HHB UCT 207', type: 'Take-up Housing Unit (Натяжной узел нории)', price: '1 850 ₽', stock: 54, img: 'images/uct.jpg' },
+    { sku: 'HHB STAINLESS UC 204', type: 'Stainless Steel Waterproof Series (Нержавеющая сталь)', price: '2 950 ₽', stock: 18, img: 'images/stainless.jpg' },
+    { sku: 'FKD UK 208 + H2308', type: 'Adapter Sleeve Tapered Bore Series (С конической втулкой)', price: '1 620 ₽', stock: 95, img: 'images/uk.jpg' },
+    { sku: 'FKD NA 206', type: 'Eccentric Locking Collar Insert (С эксцентриковым кольцом)', price: '730 ₽', stock: 110, img: 'images/na.jpg' },
+    { sku: 'HHB 22315-E1-T41A', type: 'Spherical Roller Vibrating Screen Series (Для виброгрохотов)', price: '7 950 ₽', stock: 12, img: 'images/spherical.jpg' }
+  ];
+
+  const grid = document.getElementById('catalogGrid');
+  grid.innerHTML = products.map(p => `
+    <div class="group rounded-2xl bg-white p-5 border border-neutral-200 hover:border-hhb hover:shadow-lg transition flex flex-col justify-between">
+      <div>
+        <div class="aspect-square rounded-xl bg-neutral-100 mb-4 flex items-center justify-center overflow-hidden p-2">
+          <img src="${p.img}" class="w-full h-full object-contain group-hover:scale-105 transition rounded-lg" alt="${p.sku}" onerror="this.src='frames_eevee/mobile_webp/0060.webp'" />
+        </div>
+        <div class="text-xs font-bold tracking-widest text-hhb">${p.sku.startsWith('FKD') ? 'FKD' : 'HHB'}</div>
+        <div class="font-bold mt-1 text-sm text-neutral-900">${p.sku}</div>
+        <div class="text-[11px] text-neutral-500 mt-1 leading-normal font-medium">${p.type}</div>
+      </div>
+      <div class="mt-4 pt-3 border-t border-neutral-100 flex items-center justify-between">
+        <div class="font-extrabold text-neutral-900 text-base">${p.price}</div>
+        <div class="text-xs text-green-600 font-semibold">● ${p.stock} шт</div>
+      </div>
+    </div>
+  `).join('');
+</script>
+</body>
+</html>

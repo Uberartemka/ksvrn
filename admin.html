@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HHB / FKD — Панель Администратора и Менеджера</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Jost:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        colors: {
+          hhb: { DEFAULT: '#C8102E', dark: '#8B0A20', light: '#FF3A56' },
+          ink: { 900: '#0B0D10', 800: '#14171C', 700: '#1F242C', 500: '#6B7280' },
+        },
+        fontFamily: {
+          sans: ['Jost', 'system-ui', 'sans-serif'],
+          bebas: ['Bebas Neue', 'sans-serif']
+        },
+      },
+    },
+  };
+</script>
+<style>
+  body { font-family: 'Jost', sans-serif; background: #F8FAFC; color: #0B0D10; }
+  .active-tab { background: #C8102E; color: white !important; }
+</style>
+</head>
+<body class="antialiased min-h-screen flex flex-col md:flex-row">
+
+  <!-- SIDEBAR NAVIGATION -->
+  <aside class="w-full md:w-64 bg-ink-900 text-white shrink-0 flex flex-col border-r border-white/5">
+    <div class="p-6 border-b border-white/5">
+      <a href="index.html" class="flex items-center gap-2">
+        <span class="inline-block w-8 h-8 rounded-full bg-hhb"></span>
+        <span class="font-extrabold tracking-wide font-bebas text-2xl text-white">HHB PANEL<span class="text-hhb">.</span></span>
+      </a>
+      <div class="mt-2 text-[10px] uppercase font-bold tracking-widest text-neutral-500">Кабинет Менеджера</div>
+    </div>
+    
+    <nav class="flex-1 p-4 space-y-1">
+      <button onclick="switchTab('dashboard')" id="btn-dashboard" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition active-tab">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Панель обзора
+      </button>
+      <button onclick="switchTab('proposals')" id="btn-proposals" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Умное КП (Офферы)
+      </button>
+      <button onclick="switchTab('reports')" id="btn-reports" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Отчеты по закупкам
+      </button>
+      <button onclick="switchTab('parser')" id="btn-parser" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><path d="M11 8a3 3 0 0 0-3 3"/></svg>
+        Парсер лидов B2B
+      </button>
+      <button onclick="switchTab('clients')" id="btn-clients" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-neutral-400 hover:text-white hover:bg-white/5 transition">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        База B2B клиентов
+      </button>
+    </nav>
+
+    <div class="p-4 border-t border-white/5">
+      <div class="flex items-center gap-3 bg-white/5 p-3 rounded-xl">
+        <div class="w-8 h-8 rounded-full bg-hhb flex items-center justify-center font-bold text-xs">КС</div>
+        <div>
+          <div class="text-xs font-bold">Сергей снабженец</div>
+          <div class="text-[10px] text-neutral-500 font-semibold">ООО "Компонент Сервис"</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN INTERACTIVE WORKSPACE -->
+  <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+
+    <!-- TAB 1: DASHBOARD OVERVIEW -->
+    <section id="tab-dashboard" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-extrabold font-bebas tracking-wide">Панель управления продажами</h1>
+        <span class="text-xs font-bold text-emerald-600 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">1С Синхронизация: Активна</span>
+      </div>
+
+      <!-- Quick Metrics Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-neutral-500 uppercase">Обороты за май</div>
+            <div class="text-3xl font-bold font-bebas mt-1">4.2 млн ₽</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-hhb/10 text-hhb flex items-center justify-center">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-neutral-500 uppercase">Новых КП за сегодня</div>
+            <div class="text-3xl font-bold font-bebas mt-1">14 офферов</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-neutral-500 uppercase">B2B Клиентов в CRM</div>
+            <div class="text-3xl font-bold font-bebas mt-1">642 компании</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          </div>
+        </div>
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex items-center justify-between">
+          <div>
+            <div class="text-xs font-semibold text-neutral-500 uppercase">Средняя скидка</div>
+            <div class="text-3xl font-bold font-bebas mt-1">12.4 %</div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions / Live Feed -->
+      <div class="grid md:grid-cols-3 gap-6">
+        <!-- Sales Funnel Chart Mock -->
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm md:col-span-2">
+          <div class="text-lg font-bold font-bebas tracking-wider text-neutral-800 mb-4">Активность продаж HHB/FKD</div>
+          <div class="h-64 flex items-end gap-4 pt-10 px-4">
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-slate-100 rounded-t-xl h-24 relative overflow-hidden flex items-end justify-center"><div class="bg-hhb w-full h-[60%]"></div></div>
+              <span class="text-xs text-neutral-500 font-semibold">Январь</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-slate-100 rounded-t-xl h-36 relative overflow-hidden flex items-end justify-center"><div class="bg-hhb w-full h-[70%]"></div></div>
+              <span class="text-xs text-neutral-500 font-semibold">Февраль</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-slate-100 rounded-t-xl h-48 relative overflow-hidden flex items-end justify-center"><div class="bg-hhb w-full h-[85%]"></div></div>
+              <span class="text-xs text-neutral-500 font-semibold">Март</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-slate-100 rounded-t-xl h-60 relative overflow-hidden flex items-end justify-center"><div class="bg-hhb w-full h-[95%]"></div></div>
+              <span class="text-xs text-neutral-500 font-semibold">Апрель</span>
+            </div>
+            <div class="flex-1 flex flex-col items-center gap-2">
+              <div class="w-full bg-slate-100 rounded-t-xl h-64 relative overflow-hidden flex items-end justify-center"><div class="bg-hhb-dark w-full h-full"></div></div>
+              <span class="text-xs font-bold text-hhb">Май (Текущий)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- B2B Recent Alerts -->
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm flex flex-col justify-between">
+          <div>
+            <div class="text-lg font-bold font-bebas tracking-wider text-neutral-800 mb-4">Уведомления CRM & 1С</div>
+            <div class="space-y-4">
+              <div class="flex gap-3 items-start text-xs border-b border-neutral-100 pb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-hhb mt-1 shrink-0"></span>
+                <div>
+                  <div class="font-bold">АГРОЭКО запросил аналог SKF</div>
+                  <div class="text-neutral-500">Запрос из AI-поиска · Менеджер назначен</div>
+                </div>
+              </div>
+              <div class="flex gap-3 items-start text-xs border-b border-neutral-100 pb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500 mt-1 shrink-0"></span>
+                <div>
+                  <div class="font-bold">1С склад обновлен</div>
+                  <div class="text-neutral-500">Поступление партии HHB UCF220 RF</div>
+                </div>
+              </div>
+              <div class="flex gap-3 items-start text-xs">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mt-1 shrink-0"></span>
+                <div>
+                  <div class="font-bold">ЭкоНива: завершается контракт</div>
+                  <div class="text-neutral-500">Рекомендуется отправить новое КП со скидкой 15%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button onclick="switchTab('proposals')" class="mt-4 w-full bg-neutral-900 hover:bg-black text-white text-xs py-3 rounded-xl font-bold uppercase tracking-wider transition">Создать предложение</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: SMART PROPOSAL (КП GENERATOR) -->
+    <section id="tab-proposals" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-extrabold font-bebas tracking-wide">Умная система выставления коммерческих предложений (КП)</h1>
+        <div class="text-xs text-neutral-500 font-semibold">1С Интеграция цен автоподгружена</div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8 items-start">
+        <!-- Configuration Card -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
+          <h2 class="text-xl font-bold font-bebas tracking-wider border-b border-neutral-100 pb-3">Шаг 1: Настройки предложения</h2>
+
+          <!-- Client Selector -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Выберите клиента из CRM (Битрикс24)</label>
+            <select id="kp-client" class="w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm focus:border-hhb outline-none">
+              <option value="agroeco">ООО "АГРОЭКО" (Крупный опт, Холдинг)</option>
+              <option value="econiva">ООО "ЭКОНИВА-ЧЕРНОЗЕМЬЕ" (Спец-цены)</option>
+              <option value="miratorg">АПХ "МИРАТОРГ" (Стандартный B2B)</option>
+              <option value="rusagro">ГК "РУСАГРО" (Новый клиент)</option>
+              <option value="other">Частный агроном / Разовый заказ</option>
+            </select>
+          </div>
+
+          <!-- Product Presets -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Выберите номенклатурный пакет (из 1С)</label>
+            <div class="grid grid-cols-2 gap-3">
+              <button onclick="setProductPreset('agro')" class="rounded-xl border-2 border-neutral-200 hover:border-hhb p-3 text-left text-xs font-bold transition focus:border-hhb">
+                🌾 СЕЛЬХОЗ ПАКЕТ
+                <div class="text-[10px] text-neutral-500 font-medium mt-1">Корпусные узлы, UC, UCP, UCF для норий и почвообработки</div>
+              </button>
+              <button onclick="setProductPreset('industrial')" class="rounded-xl border-2 border-neutral-200 hover:border-hhb p-3 text-left text-xs font-bold transition focus:border-hhb">
+                🏭 ПРОМ-ТЯЖ ПАКЕТ
+                <div class="text-[10px] text-neutral-500 font-medium mt-1">Роликовые сферические подшипники 223, зазоры C3, T41A</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Discount Selector (Easy selection) -->
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Выберите скидку для этого клиента</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button onclick="setKpDiscount(0)" id="dc-0" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition active-tab">0%<br><span class="text-[9px] font-normal text-white/70">База</span></button>
+              <button onclick="setKpDiscount(10)" id="dc-10" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition">10%<br><span class="text-[9px] font-normal text-neutral-500">Дилер</span></button>
+              <button onclick="setKpDiscount(15)" id="dc-15" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition">15%<br><span class="text-[9px] font-normal text-neutral-500">Партнер</span></button>
+              <button onclick="setKpDiscount(20)" id="dc-20" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition">20%<br><span class="text-[9px] font-normal text-neutral-500">VIP</span></button>
+            </div>
+            <p class="mt-2 text-[10px] text-neutral-500">Цены пересчитаются автоматически по всей выбранной номенклатуре.</p>
+          </div>
+
+          <!-- Action Button -->
+          <button onclick="generateKp()" class="w-full bg-hhb hover:bg-hhb-dark text-white text-sm py-4 rounded-xl font-bold uppercase tracking-wider transition shadow-lg shadow-hhb/10">Сформировать готовый каталог КП</button>
+        </div>
+
+        <!-- Output Preview Panel -->
+        <div class="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-neutral-100 pb-3">
+            <h2 class="text-xl font-bold font-bebas tracking-wider">Предпросмотр коммерческого предложения</h2>
+            <button onclick="window.print()" class="text-xs text-hhb hover:underline flex items-center gap-1">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+              Печать / Сохранить PDF
+            </button>
+          </div>
+
+          <!-- Document Box -->
+          <div id="kp-document" class="border border-neutral-300 p-8 rounded-xl space-y-6 text-sm bg-white shadow-lg min-h-[500px]">
+            <!-- Header Letterhead -->
+            <div class="flex items-start justify-between border-b-2 border-hhb pb-6">
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="inline-block w-6 h-6 rounded-full bg-hhb"></span>
+                  <span class="font-extrabold tracking-wide font-bebas text-xl text-ink-900">КОМПОНЕНТ СЕРВИС<span class="text-hhb">.</span></span>
+                </div>
+                <div class="text-[10px] text-neutral-500 font-bold uppercase tracking-wider mt-1">Официальный Дистрибьютор HHB & FKD в России</div>
+                <div class="text-[10px] text-neutral-400 mt-1">г. Воронеж, ул. Промышленная, 1 · Тел: +7 (473) 255-00-00 · csbrg.ru</div>
+              </div>
+              <div class="text-right text-xs">
+                <div class="text-white bg-hhb px-3 py-1 font-bold rounded uppercase tracking-wider text-[10px]">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</div>
+                <div class="font-bold text-neutral-800 mt-2 text-sm">Бланк № <span id="doc-id">542-M</span></div>
+                <div class="text-neutral-500 font-medium mt-0.5">Дата: 26.05.2026</div>
+              </div>
+            </div>
+
+            <!-- Client Info & Welcome Text -->
+            <div class="grid grid-cols-2 gap-4 text-xs border-b border-neutral-100 pb-4">
+              <div>
+                <div class="text-neutral-400 uppercase font-bold tracking-wider text-[9px] mb-1">ПОЛУЧАТЕЛЬ (КЛИЕНТ)</div>
+                <div class="font-bold text-neutral-800 text-sm" id="doc-client">Выбирите клиента из списка</div>
+                <div class="text-neutral-500 mt-1">Внимание: Руководителю отдела снабжения / Главному инженеру</div>
+              </div>
+              <div class="text-right">
+                <div class="text-neutral-400 uppercase font-bold tracking-wider text-[9px] mb-1">УСЛОВИЯ ПОСТАВКИ</div>
+                <div class="font-bold text-neutral-800">1 день (В наличии на складе)</div>
+                <div class="text-neutral-500 mt-1">Гарантия на продукцию: 12 месяцев</div>
+              </div>
+            </div>
+
+            <!-- Introductory Text -->
+            <div class="text-xs text-neutral-600 leading-relaxed italic">
+              «Выражаем Вам свое почтение и предлагаем рассмотреть возможность поставки высококачественной подшипниковой продукции брендов HHB (Премиум) и FKD (Стандарт) напрямую от эксклюзивного дистрибьютора в РФ. Ниже представлены согласованные индивидуальные цены с учетом Вашего партнерского статуса.»
+            </div>
+
+            <!-- Table of Items -->
+            <div class="overflow-x-auto">
+              <table class="w-full text-xs text-left">
+                <thead>
+                  <tr class="border-b-2 border-neutral-200 text-neutral-400 uppercase text-[9px] font-bold tracking-wider">
+                    <th class="py-3">Позиция (Номенклатура 1С)</th>
+                    <th class="py-3 text-center">Кол-во (шт)</th>
+                    <th class="py-3 text-right">База (₽)</th>
+                    <th class="py-3 text-right">Скидка</th>
+                    <th class="py-3 text-right">Цена со скидкой (₽)</th>
+                    <th class="py-3 text-right">Итого (₽)</th>
+                  </tr>
+                </thead>
+                <tbody id="kp-items-body" class="divide-y divide-neutral-100">
+                  <tr>
+                    <td colspan="6" class="py-8 text-center text-neutral-500">Пожалуйста, выберите номенклатурный пакет слева и нажмите «Сформировать КП»</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Summary & Signatures -->
+            <div class="border-t-2 border-neutral-100 pt-6 flex justify-between items-end">
+              <!-- Official stamp and signatures -->
+              <div class="flex items-center gap-6">
+                <div class="text-xs">
+                  <div class="text-neutral-400 font-semibold text-[9px] uppercase tracking-wider mb-2">ОТГРУЗКУ РАЗРЕШИЛ</div>
+                  <div class="font-bold text-neutral-800">Селезнев С. В.</div>
+                  <div class="text-[10px] text-neutral-500 mt-0.5">Генеральный директор ООО "КС"</div>
+                </div>
+                <!-- Mini Stamp/Sign Mockup -->
+                <div class="relative w-20 h-20 opacity-80 shrink-0 select-none pointer-events-none">
+                  <!-- Sign -->
+                  <svg class="absolute top-4 left-2 w-16 h-12 text-blue-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <path d="M10 80 Q25 10 40 70 T70 30 Q90 90 95 60"/>
+                    <path d="M30 50 L80 52"/>
+                  </svg>
+                  <!-- Stamp -->
+                  <div class="absolute inset-0 rounded-full border-2 border-blue-500/40 flex items-center justify-center text-center p-1 text-[7px] text-blue-500/60 font-bold uppercase rotate-12">
+                    ООО "КОМПОНЕНТ СЕРВИС"<br>М.П.<br>ВОРОНЕЖ
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grand Total -->
+              <div class="text-right space-y-1">
+                <div class="text-xs text-neutral-500 font-medium">Ваша индивидуальная скидка: <span id="doc-discount" class="font-bold text-hhb">0%</span></div>
+                <div class="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider">Итоговая сумма коммерческого предложения</div>
+                <div class="text-3xl font-extrabold font-bebas tracking-wide text-ink-900" id="doc-total">0 ₽</div>
+                <div class="text-[9px] text-neutral-500 font-medium">Цены указаны в рублях РФ с учетом НДС (20%)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PROCUREMENT REPORTS -->
+    <section id="tab-reports" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-extrabold font-bebas tracking-wide">Генератор отчетов по закупкам и поставкам</h1>
+        <button onclick="downloadReportExcel()" class="bg-neutral-900 hover:bg-black text-white text-xs px-4 py-2 rounded-xl font-bold uppercase tracking-wider transition">Экспорт в Excel (XLSX)</button>
+      </div>
+
+      <!-- Filters Panel -->
+      <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm grid md:grid-cols-4 gap-4 items-end">
+        <div>
+          <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Клиент</label>
+          <select id="rep-client" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+            <option value="all">Все клиенты</option>
+            <option value="agroeco">ООО "АГРОЭКО"</option>
+            <option value="econiva">ООО "ЭКОНИВА"</option>
+            <option value="miratorg">АПХ "МИРАТОРГ"</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Бренд продукции</label>
+          <select id="rep-brand" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+            <option value="all">Все бренды</option>
+            <option value="hhb">HHB (Премиум)</option>
+            <option value="fkd">FKD (Стандарт)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Период</label>
+          <select id="rep-period" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+            <option value="may">Май 2026</option>
+            <option value="april">Апрель 2026</option>
+            <option value="q1">Q1 2026</option>
+          </select>
+        </div>
+        <button onclick="filterReports()" class="bg-hhb hover:bg-hhb-dark text-white text-xs py-3 rounded-xl font-bold uppercase tracking-wider transition">Сгенерировать отчет</button>
+      </div>
+
+      <!-- Live Report Table -->
+      <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-neutral-50 text-neutral-500 uppercase text-xs border-b border-neutral-200">
+            <tr>
+              <th class="px-6 py-4">Клиент</th>
+              <th class="px-6 py-4">Номенклатурная позиция (1С)</th>
+              <th class="px-6 py-4">Бренд</th>
+              <th class="px-6 py-4 text-center">Кол-во (шт)</th>
+              <th class="px-6 py-4 text-right">Сумма (₽)</th>
+              <th class="px-6 py-4 text-center">Статус</th>
+            </tr>
+          </thead>
+          <tbody id="report-table-body" class="divide-y divide-neutral-200">
+            <!-- Dynamically populated rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB: B2B LEAD PARSER -->
+    <section id="tab-parser" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-extrabold font-bebas tracking-wide">B2B Парсер горячих клиентов (Лидогенерация)</h1>
+        <span class="text-xs text-neutral-500 font-semibold">Использует API Яндекс Карт и Тендерный парсер ЕИС</span>
+      </div>
+
+      <!-- Parser Config Card -->
+      <div class="grid lg:grid-cols-3 gap-6 items-start">
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+          <h2 class="text-lg font-bold font-bebas tracking-wider border-b border-neutral-100 pb-2">Параметры сбора данных</h2>
+          
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Целевая отрасль / категория</label>
+            <select id="parseQuery" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+              <option value="элеватор">🌾 Элеваторы и зернохранилища</option>
+              <option value="сахарный завод">🍬 Сахарные заводы / Пищевка</option>
+              <option value="карьер">⛰️ Карьеры / Добыча щебня</option>
+              <option value="маслозавод">🌻 Маслоэкстракционные заводы</option>
+              <option value="цементный завод">🧱 Цементные заводы / Пром</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Регион поиска</label>
+            <select id="parseRegion" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+              <option value="Воронеж">Воронежская область</option>
+              <option value="Липецк">Липецкая область</option>
+              <option value="Белгород">Белгородская область</option>
+              <option value="Ростов">Ростовская область</option>
+              <option value="Краснодар">Краснодарский край</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Макс. глубина парсинга</label>
+            <select id="parseLimit" class="w-full rounded-xl border border-neutral-300 px-3 py-2 text-xs outline-none">
+              <option value="5">Топ 5 предприятий</option>
+              <option value="15">Топ 15 предприятий</option>
+              <option value="30">Топ 30 предприятий</option>
+            </select>
+          </div>
+
+          <button onclick="startVisualParsing()" class="w-full bg-hhb hover:bg-hhb-dark text-white text-xs py-3.5 rounded-xl font-bold uppercase tracking-wider transition shadow-lg shadow-hhb/10">Запустить сканирование</button>
+        </div>
+
+        <!-- Parser Output Panel -->
+        <div class="bg-white p-6 rounded-2xl border border-neutral-200 shadow-sm lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between border-b border-neutral-100 pb-2">
+            <h2 class="text-lg font-bold font-bebas tracking-wider">Найденные организации по запросу</h2>
+            <button onclick="exportParsedLeads()" class="text-xs text-hhb hover:underline flex items-center gap-1 font-semibold">
+              📥 Экспорт в CSV / CRM
+            </button>
+          </div>
+
+          <!-- Loading Visualizer (Simulated animation for dashboard effect) -->
+          <div id="parserLoading" class="hidden flex-col items-center justify-center py-20">
+            <div class="w-12 h-12 rounded-full border-4 border-hhb/30 border-t-hhb animate-spin"></div>
+            <div class="mt-4 text-xs font-semibold tracking-wide animate-pulse">ИИ-парсер опрашивает API Яндекс Карт и анализирует последние тендеры...</div>
+            <div class="mt-2 text-[10px] text-neutral-400 font-medium" id="parserProgress">Парсинг: 0%</div>
+          </div>
+
+          <!-- Parsed Leads Table -->
+          <div id="parserResult" class="overflow-x-auto min-h-[300px]">
+            <table class="w-full text-xs text-left">
+              <thead class="bg-neutral-50 text-neutral-500 uppercase border-b border-neutral-200">
+                <tr>
+                  <th class="px-4 py-3">Организация</th>
+                  <th class="px-4 py-3">Отрасль</th>
+                  <th class="px-4 py-3">Контакты</th>
+                  <th class="px-4 py-3">Потребность HHB/FKD</th>
+                  <th class="px-4 py-3 text-center">Действие</th>
+                </tr>
+              </thead>
+              <tbody id="parser-table-body" class="divide-y divide-neutral-100">
+                <tr>
+                  <td colspan="5" class="py-16 text-center text-neutral-400 font-medium">Задайте параметры слева и нажмите «Запустить сканирование» для сбора лидов.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: CLIENT DATABASE -->
+    <section id="tab-clients" class="hidden space-y-6">
+      <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-extrabold font-bebas tracking-wide">База B2B клиентов (Синхронизация CRM)</h1>
+        <button class="bg-hhb hover:bg-hhb-dark text-white text-xs px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider transition">+ Новый клиент</button>
+      </div>
+
+      <!-- Search and Quick Filter -->
+      <div class="bg-white p-4 rounded-2xl border border-neutral-200 shadow-sm flex gap-4">
+        <input type="text" placeholder="Поиск компании по ИНН, названию или менеджеру..." class="flex-1 rounded-xl bg-slate-50 border border-neutral-200 px-4 py-2.5 text-xs outline-none focus:border-hhb" />
+        <button class="bg-neutral-100 hover:bg-neutral-200 text-neutral-700 text-xs px-5 rounded-xl font-bold transition">Найти</button>
+      </div>
+
+      <!-- Clients List -->
+      <div class="bg-white rounded-2xl border border-neutral-200 shadow-sm overflow-hidden">
+        <table class="w-full text-sm text-left">
+          <thead class="bg-neutral-50 text-neutral-500 uppercase text-xs border-b border-neutral-200">
+            <tr>
+              <th class="px-6 py-4">Клиент</th>
+              <th class="px-6 py-4">Город</th>
+              <th class="px-6 py-4">Статус CRM</th>
+              <th class="px-6 py-4">Менеджер</th>
+              <th class="px-6 py-4 text-center">Персональная скидка</th>
+              <th class="px-6 py-4 text-right">Всего закупок</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-200">
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-6 py-4 font-bold text-neutral-800">ООО "АГРОЭКО"</td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Воронеж</td>
+              <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700">Активный опт</span></td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Сергей С.</td>
+              <td class="px-6 py-4 text-center font-bold text-hhb">15%</td>
+              <td class="px-6 py-4 text-right font-bold">1 420 000 ₽</td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-6 py-4 font-bold text-neutral-800">ООО "ЭКОНИВА-ЧЕРНОЗЕМЬЕ"</td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Липецк</td>
+              <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700">Активный опт</span></td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Сергей С.</td>
+              <td class="px-6 py-4 text-center font-bold text-hhb">20%</td>
+              <td class="px-6 py-4 text-right font-bold">2 110 000 ₽</td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-6 py-4 font-bold text-neutral-800">АПХ "МИРАТОРГ"</td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Белгород</td>
+              <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-green-100 text-green-700">Активный опт</span></td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Александр П.</td>
+              <td class="px-6 py-4 text-center font-bold text-neutral-500">0%</td>
+              <td class="px-6 py-4 text-right font-bold">480 000 ₽</td>
+            </tr>
+            <tr class="hover:bg-slate-50 transition">
+              <td class="px-6 py-4 font-bold text-neutral-800">ГК "РУСАГРО"</td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Тамбов</td>
+              <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">Переговоры</span></td>
+              <td class="px-6 py-4 text-xs text-neutral-600">Сергей С.</td>
+              <td class="px-6 py-4 text-center font-bold text-hhb">10%</td>
+              <td class="px-6 py-4 text-right font-bold">0 ₽</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ========== NAVIGATION TABS ========== */
+    function switchTab(tabId) {
+      document.querySelectorAll('main > section').forEach(section => {
+        section.classList.add('hidden');
+      });
+      document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active-tab');
+      });
+      document.getElementById('btn-' + tabId).classList.add('active-tab');
+    }
+
+    /* ========== SMART KP GENERATOR LOGIC ========== */
+    let currentDiscount = 0;
+    let selectedPreset = 'agro';
+
+    const presets = {
+      agro: [
+        { sku: 'HHB UCP206 (корпусной)', qty: 50, price: 1180 },
+        { sku: 'HHB UC210 (самоустан.)', qty: 100, price: 690 },
+        { sku: 'FKD UCF208 (узел)', qty: 40, price: 850 }
+      ],
+      industrial: [
+        { sku: 'HHB 22315-E1-T41A (вибро)', qty: 10, price: 7950 },
+        { sku: 'HHB 6205-2RS C3 Premium', qty: 200, price: 420 },
+        { sku: 'HHB NU 312 ECP', qty: 15, price: 4300 }
+      ]
+    };
+
+    function setProductPreset(preset) {
+      selectedPreset = preset;
+      generateKp();
+    }
+
+    function setKpDiscount(discount) {
+      currentDiscount = discount;
+      document.querySelectorAll('.disc-btn').forEach(btn => {
+        btn.classList.remove('active-tab');
+      });
+      document.getElementById('dc-' + discount).classList.add('active-tab');
+      generateKp();
+    }
+
+    function generateKp() {
+      const clientSelect = document.getElementById('kp-client');
+      const clientName = clientSelect.options[clientSelect.selectedIndex].text;
+      
+      document.getElementById('doc-client').textContent = clientName;
+      
+      // Update discount text in multiple elements if needed
+      const discElements = document.querySelectorAll('#doc-discount');
+      discElements.forEach(el => el.textContent = currentDiscount + '%');
+      
+      const items = presets[selectedPreset];
+      const tbody = document.getElementById('kp-items-body');
+      tbody.innerHTML = '';
+
+      let grandTotal = 0;
+
+      items.forEach(item => {
+        const discountedPrice = Math.round(item.price * (1 - currentDiscount / 100));
+        const itemTotal = discountedPrice * item.qty;
+        grandTotal += itemTotal;
+
+        tbody.innerHTML += `
+          <tr class="border-b border-neutral-100 text-xs hover:bg-neutral-100/50 transition">
+            <td class="py-3 font-semibold text-neutral-800">${item.sku}</td>
+            <td class="py-3 text-center font-semibold text-neutral-700">${item.qty}</td>
+            <td class="py-3 text-right text-neutral-400 font-medium">${item.price.toLocaleString('ru-RU')} ₽</td>
+            <td class="py-3 text-right text-emerald-600 font-bold">-${currentDiscount}%</td>
+            <td class="py-3 text-right text-neutral-800 font-semibold">${discountedPrice.toLocaleString('ru-RU')} ₽</td>
+            <td class="py-3 text-right font-extrabold text-hhb">${itemTotal.toLocaleString('ru-RU')} ₽</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('doc-total').textContent = grandTotal.toLocaleString('ru-RU') + ' ₽';
+      document.getElementById('doc-id').textContent = Math.floor(Math.random() * (999 - 100 + 1) + 100) + "-M";
+    }
+
+    /* ========== PROCUREMENT REPORTS DATA & LOGIC ========== */
+    const rawReportDatabase = [
+      { client: 'ООО "АГРОЭКО"', sku: 'HHB UCP206 Корпус', brand: 'HHB', qty: 120, sum: 59000, status: 'Доставлено' },
+      { client: 'ООО "АГРОЭКО"', sku: 'FKD UC210 Подшипник', brand: 'FKD', qty: 300, sum: 207000, status: 'Доставлено' },
+      { client: 'ООО "ЭКОНИВА"', sku: 'HHB 22315-E1-T41A Вибро', brand: 'HHB', qty: 24, sum: 190800, status: 'В доставке' },
+      { client: 'ООО "ЭКОНИВА"', sku: 'HHB 6205-2RS C3 Premium', brand: 'HHB', qty: 1500, sum: 630000, status: 'Доставлено' },
+      { client: 'АПХ "МИРАТОРГ"', sku: 'HHB NU 312 ECP Ролик', brand: 'HHB', qty: 45, sum: 193500, status: 'В обработке' }
+    ];
+
+    function filterReports() {
+      const clientFilter = document.getElementById('rep-client').value;
+      const brandFilter = document.getElementById('rep-brand').value;
+
+      const tbody = document.getElementById('report-table-body');
+      tbody.innerHTML = '';
+
+      rawReportDatabase.forEach(row => {
+        // Simple mock filtering
+        const matchesClient = clientFilter === 'all' || 
+          (clientFilter === 'agroeco' && row.client.includes('АГРОЭКО')) ||
+          (clientFilter === 'econiva' && row.client.includes('ЭКОНИВА')) ||
+          (clientFilter === 'miratorg' && row.client.includes('МИРАТОРГ'));
+
+        const matchesBrand = brandFilter === 'all' || row.brand.toLowerCase() === brandFilter;
+
+        if (matchesClient && matchesBrand) {
+          const statusBg = row.status === 'Доставлено' ? 'bg-green-100 text-green-700' :
+                           row.status === 'В доставке' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
+
+          tbody.innerHTML += `
+            <tr class="hover:bg-neutral-50 transition">
+              <td class="px-6 py-4 font-bold text-neutral-800">${row.client}</td>
+              <td class="px-6 py-4 text-xs font-semibold text-neutral-700">${row.sku}</td>
+              <td class="px-6 py-4 text-xs font-bold text-hhb">${row.brand}</td>
+              <td class="px-6 py-4 text-center font-semibold">${row.qty}</td>
+              <td class="px-6 py-4 text-right font-bold text-neutral-900">${row.sum.toLocaleString('ru-RU')} ₽</td>
+              <td class="px-6 py-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${statusBg}">${row.status}</span></td>
+            </tr>
+          `;
+        }
+      });
+    }
+
+    function downloadReportExcel() {
+      alert('Отчет успешно сформирован и отправлен на экспорт в формат 1С / XLSX!');
+    }
+
+    /* ========== B2B LEAD PARSER LOGIC ========== */
+    const parserMockData = {
+      "элеватор": {
+        "Воронеж": [
+          { name: 'Воронежский Мукомольный Комбинат', cat: 'Элеватор, Хранение', contacts: '+7 (473) 255-44-12 · vormuk.ru', need: 'Корпусные узлы UCP208 для приводных барабанов норий. Высокая агропыль.' },
+          { name: 'АГРОЭКО-Восток (Элеваторный Хаб)', cat: 'Элеватор, Зернохранилище', contacts: '+7 (473) 200-11-11 · agroeco.ru', need: 'Самоустанавливающиеся подшипники серии UC, натяжные узлы UCF206.' },
+          { name: 'Калачеевский Элеватор', cat: 'Элеватор, Сушилки', contacts: '+7 (47363) 2-14-55 · kalachel.ru', need: 'Двухрядные сферические подшипники для вентиляторов зерносушилок.' }
+        ],
+        "Липецк": [
+          { name: 'Липецкхлебмакаронпром', cat: 'Элеватор, Мельница', contacts: '+7 (4742) 28-04-12 · lhm.ru', need: 'Премиум подшипники HHB 6205, зазор C3, радиальные.' }
+        ]
+      },
+      "сахарный завод": {
+        "Воронеж": [
+          { name: 'Грибановский Сахарный Завод', cat: 'Сахарный завод, Пищевка', contacts: '+7 (47348) 3-01-22', need: 'Подшипники конвейерной ленты сырого жома, нержавеющие корпуса HHB-SS.' },
+          { name: 'Хохольский Сахарный Комбинат', cat: 'Пищевое производство', contacts: '+7 (47391) 4-12-88', need: 'Роликовые конические подшипники редукторов свеклорезок.' }
+        ]
+      },
+      "карьер": {
+        "Воронеж": [
+          { name: 'Павловск Неруд (Карьероуправление)', cat: 'Добыча щебня, Карьер', contacts: '+7 (47362) 2-15-51 · pavlovskgranit.ru', need: 'Вибростойкие подшипники HHB T41A (22316) для инерционных грохотов. Ударная нагрузка.' },
+          { name: 'Латненский Карьер глин', cat: 'Карьер, Глина', contacts: '+7 (47372) 5-11-44', need: 'Цилиндрические роликовые NU315 для карьерных экскаваторов.' }
+        ]
+      }
+    };
+
+    function startVisualParsing() {
+      const q = document.getElementById('parseQuery').value;
+      const r = document.getElementById('parseRegion').value;
+
+      const loader = document.getElementById('parserLoading');
+      const result = document.getElementById('parserResult');
+      const progress = document.getElementById('parserProgress');
+
+      loader.classList.remove('hidden');
+      result.classList.add('hidden');
+
+      let pct = 0;
+      const interval = setInterval(() => {
+        pct += 20;
+        progress.textContent = `Парсинг: ${pct}% (Запросы к API Карт...)`;
+        if (pct >= 100) {
+          clearInterval(interval);
+          renderParsedLeads(q, r);
+        }
+      }, 300);
+    }
+
+    function renderParsedLeads(query, region) {
+      const loader = document.getElementById('parserLoading');
+      const result = document.getElementById('parserResult');
+      const tbody = document.getElementById('parser-table-body');
+
+      loader.classList.add('hidden');
+      result.classList.remove('hidden');
+
+      tbody.innerHTML = '';
+
+      // Get mock data or fallback to general
+      const categoryData = parserMockData[query] || parserMockData["элеватор"];
+      const leads = categoryData[region] || categoryData["Воронеж"] || [];
+
+      if (leads.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-neutral-500">По заданным фильтрам организаций не найдено. Попробуйте сменить параметры (например, Элеваторы -> Воронеж)</td></tr>`;
+        return;
+      }
+
+      leads.forEach(lead => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-neutral-50 transition border-b border-neutral-100">
+            <td class="px-4 py-4 font-bold text-neutral-800">${lead.name}</td>
+            <td class="px-4 py-4 text-xs text-neutral-600">${lead.cat}</td>
+            <td class="px-4 py-4 text-xs text-neutral-500">${lead.contacts}</td>
+            <td class="px-4 py-4 text-xs text-neutral-700 font-medium">${lead.need}</td>
+            <td class="px-4 py-4 text-center">
+              <button onclick="importLeadToCrm('${lead.name}')" class="bg-neutral-900 hover:bg-black text-white px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition">В CRM</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function importLeadToCrm(name) {
+      alert(`Лид "${name}" успешно отправлен в CRM Битрикс24! Создана карточка переговоров, назначен менеджер Сергей С.`);
+    }
+
+    function exportParsedLeads() {
+      alert('База найденных предприятий успешно экспортирована в leads.csv!');
+    }
+
+    /* Initialize workspace states on start */
+    generateKp();
+    filterReports();
+  </script>
+</body>
+</html>

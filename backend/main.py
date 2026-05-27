@@ -8,6 +8,7 @@ import traceback
 import urllib.request
 import json
 import time
+import os
 
 # === CONFIGURE STANDARD SYSTEM LOGGING ===
 logging.basicConfig(
@@ -163,9 +164,9 @@ def ai_search(payload: AiSearchRequest):
     start_time = time.time()
     
     # Determine which API Key to use
-    api_key = payload.api_key or "sk-db33054174df44929841f44052f44052" # Placeholder/Fallback API Key if configured
+    api_key = payload.api_key or os.getenv("DEEPSEEK_API_KEY")
     
-    if api_key and not api_key.startswith("optional_key"):
+    if api_key:
         try:
             logger.info("[AI Search] Отправка запроса к официальному API DeepSeek...")
             

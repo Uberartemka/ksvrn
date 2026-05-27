@@ -50,9 +50,37 @@
         Кабинет B2B
       </a>
       <a href="index.html#ai" class="inline-flex items-center rounded-sm border border-hhb/40 text-hhb px-5 py-2 text-xs font-bold uppercase tracking-widest hover:bg-hhb hover:text-white transition">Оставить заявку</a>
+      <!-- Mobile Hamburger Button -->
+      <button onclick="toggleMobileMenu()" class="inline-flex md:hidden text-neutral-400 hover:text-white transition focus:outline-none">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- MOBILE MENU DRAWER OVERLAY -->
+<div id="mobileMenu" class="hidden fixed inset-0 z-40 bg-neutral-950/95 backdrop-blur-md flex flex-col justify-center p-8 transition-all duration-300">
+  <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-neutral-400 hover:text-white transition">
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+  
+  <nav class="flex flex-col gap-6 text-center text-xl font-bold uppercase tracking-wider">
+    <a href="index.html#ai" onclick="toggleMobileMenu()" class="text-neutral-300 hover:text-hhb transition">Умный подбор</a>
+    <a href="#" onclick="toggleMobileMenu()" class="text-white">Каталог</a>
+    <a href="index.html#b2b" onclick="toggleMobileMenu()" class="text-neutral-300 hover:text-hhb transition">B2B-экосистема</a>
+    <a href="index.html#industries" onclick="toggleMobileMenu()" class="text-neutral-300 hover:text-hhb transition">Отрасли</a>
+    <a href="index.html#clients" onclick="toggleMobileMenu()" class="text-neutral-300 hover:text-hhb transition">Клиенты</a>
+    <hr class="border-white/10 my-4" />
+    <a href="lk.html" onclick="toggleMobileMenu()" class="inline-flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 text-white py-4 text-sm font-bold uppercase tracking-wider transition">
+      <svg class="w-5 h-5 text-hhb" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Личный кабинет B2B
+    </a>
+  </nav>
+</div>
 
 <main class="flex-1 pt-24 pb-20">
   <div class="mx-auto max-w-7xl px-6">
@@ -400,6 +428,20 @@
 
   function closeSpecModal() {
     document.getElementById('specModal').classList.add('hidden');
+  }
+
+  /* ========== MOBILE HAMBURGER MENU TOGGLE ========== */
+  let isMobileMenuOpen = false;
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    isMobileMenuOpen = !isMobileMenuOpen;
+    if (isMobileMenuOpen) {
+      menu.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    } else {
+      menu.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    }
   }
 
   // Initialize table

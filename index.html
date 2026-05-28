@@ -431,36 +431,63 @@
       <h2 class="text-4xl md:text-5xl font-extrabold leading-tight font-bebas tracking-wide">Знаем каждый узел <span class="text-hhb">вашего оборудования</span></h2>
     </div>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="fade-up rounded-3xl bg-ink-900 text-white p-7 aspect-[4/5] flex flex-col justify-between">
+      <!-- Card 1: APK -->
+      <div class="fade-up group relative overflow-hidden rounded-3xl aspect-[4/5] p-7 text-white flex flex-col justify-between shadow-xl">
+        <!-- Background Image with hover zoom -->
+        <img src="images/apk.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 -z-10" alt="АПК" />
+        <!-- Dark Gradient Overlay for high readability -->
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-900/20 -z-10"></div>
+        
         <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">01</div>
         <div>
-          <div class="text-sm text-white/50 font-semibold uppercase tracking-wider">АПК</div>
-          <div class="text-2xl font-bold mt-1">Сельхозтехника</div>
-          <div class="text-sm text-white/70 mt-2">Комбайны, посевная, почвообработка, опрыскиватели.</div>
+          <div class="text-sm text-neutral-300 font-bold uppercase tracking-wider">АПК</div>
+          <div class="text-2xl font-bold mt-1 text-white font-bebas tracking-wide">Сельхозтехника</div>
+          <div class="text-sm text-neutral-200 mt-2 font-medium leading-relaxed">Комбайны, сеялки, дискаторы, почвообработка, опрыскиватели.</div>
         </div>
       </div>
-      <div class="fade-up rounded-3xl bg-neutral-100 p-7 aspect-[4/5] flex flex-col justify-between">
+
+      <!-- Card 2: STORAGE -->
+      <div class="fade-up group relative overflow-hidden rounded-3xl aspect-[4/5] p-7 text-white flex flex-col justify-between shadow-xl">
+        <!-- Background Image with hover zoom -->
+        <img src="images/storage.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 -z-10" alt="Хранение" />
+        <!-- Dark Gradient Overlay for high readability -->
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-900/20 -z-10"></div>
+
         <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">02</div>
         <div>
-          <div class="text-sm text-ink-500 font-semibold uppercase tracking-wider">ХРАНЕНИЕ</div>
-          <div class="text-2xl font-bold mt-1">Зерноочистка и элеваторы</div>
-          <div class="text-sm text-ink-500 mt-2">Нории, транспортёры, сепараторы, сушилки.</div>
+          <div class="text-sm text-neutral-300 font-bold uppercase tracking-wider">ХРАНЕНИЕ</div>
+          <div class="text-2xl font-bold mt-1 text-white font-bebas tracking-wide">Зерноочистка & Элеваторы</div>
+          <div class="text-sm text-neutral-200 mt-2 font-medium leading-relaxed">Нории, скребковые транспортеры, сепараторы, зерносушилки.</div>
         </div>
       </div>
-      <div class="fade-up rounded-3xl bg-neutral-100 p-7 aspect-[4/5] flex flex-col justify-between">
+
+      <!-- Card 3: FOOD -->
+      <div class="fade-up group relative overflow-hidden rounded-3xl aspect-[4/5] p-7 text-white flex flex-col justify-between shadow-xl">
+        <!-- Background Image with hover zoom -->
+        <img src="images/food.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 -z-10" alt="Пищевка" />
+        <!-- Dark Gradient Overlay for high readability -->
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-900/20 -z-10"></div>
+
         <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">03</div>
         <div>
-          <div class="text-sm text-ink-500 font-semibold uppercase tracking-wider">ПИЩЕВКА</div>
-          <div class="text-2xl font-bold mt-1">Пищевая переработка</div>
-          <div class="text-sm text-ink-500 mt-2">МЭЗы, мукомольное, сахарное производство.</div>
+          <div class="text-sm text-neutral-300 font-bold uppercase tracking-wider">ПИЩЕВКА</div>
+          <div class="text-2xl font-bold mt-1 text-white font-bebas tracking-wide">Пищевая переработка</div>
+          <div class="text-sm text-neutral-200 mt-2 font-medium leading-relaxed">Маслоэкстракционные заводы, мукомольное и сахарное производство.</div>
         </div>
       </div>
-      <div class="fade-up rounded-3xl bg-ink-900 text-white p-7 aspect-[4/5] flex flex-col justify-between">
+
+      <!-- Card 4: HEAVY -->
+      <div class="fade-up group relative overflow-hidden rounded-3xl aspect-[4/5] p-7 text-white flex flex-col justify-between shadow-xl">
+        <!-- Background Image with hover zoom -->
+        <img src="images/heavy.jpg" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 -z-10" alt="Тяжпром" />
+        <!-- Dark Gradient Overlay for high readability -->
+        <div class="absolute inset-0 bg-gradient-to-t from-neutral-950 via-neutral-950/70 to-neutral-900/20 -z-10"></div>
+
         <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">04</div>
         <div>
-          <div class="text-sm text-white/50 font-semibold uppercase tracking-wider">ТЯЖПРОМ</div>
-          <div class="text-2xl font-bold mt-1">Тяжёлая промышленность</div>
-          <div class="text-sm text-white/70 mt-2">Дробилки, грохоты, конвейеры, карьерная техника.</div>
+          <div class="text-sm text-neutral-300 font-bold uppercase tracking-wider">ТЯЖПРОМ</div>
+          <div class="text-2xl font-bold mt-1 text-white font-bebas tracking-wide">Тяжёлая промышленность</div>
+          <div class="text-sm text-neutral-200 mt-2 font-medium leading-relaxed">Инерционные грохоты, дробилки, конвейеры, карьерная техника.</div>
         </div>
       </div>
     </div>

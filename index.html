@@ -628,8 +628,13 @@
   const FRAME_SMOOTHING = 0.16;
   const USE_MOBILE_FRAMES = window.matchMedia('(max-width: 900px)').matches;
   
-  // Detect if index.html is loaded from within the frames_eevee folder and adjust paths dynamically
-  const isInsideEevee = window.location.pathname.includes('/frames_eevee/') || window.location.pathname.endsWith('frames_eevee/') || window.location.pathname.endsWith('frames_eevee/index.html');
+  // Detect if index.html is loaded from within the frames_eevee folder or hosted on GitHub Pages
+  const isGithubPages = window.location.hostname.includes('github.io');
+  const isInsideEevee = window.location.pathname.includes('/frames_eevee/') || 
+                        window.location.pathname.endsWith('frames_eevee/') || 
+                        window.location.pathname.endsWith('frames_eevee/index.html') ||
+                        isGithubPages;
+  
   const DESKTOP_FRAME_PATH = isInsideEevee ? 'frames/webp_frames' : 'frames_eevee/frames/webp_frames';
   const MOBILE_FRAME_PATH = isInsideEevee ? 'mobile_webp' : 'frames_eevee/mobile_webp';
   const FALLBACK_PNG_PATH = isInsideEevee ? 'frames' : 'frames_eevee/frames';

@@ -22,3 +22,11 @@ mobile_webp_test/
 # System files
 .DS_Store
 Thumbs.db
+
+# Backend runtime files
+backend/__pycache__/
+backend/*.pyc
+backend/app.log
+backend/catalog.db
+backend/queue.db
+backend/*.exe

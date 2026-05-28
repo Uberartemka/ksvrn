@@ -25,6 +25,11 @@
 <style>
   body { font-family: 'Jost', sans-serif; background: #F8FAFC; color: #0B0D10; }
   .active-tab { background: #C8102E; color: white !important; }
+  @media print {
+    body * { visibility: hidden; }
+    #kp-printable, #kp-printable * { visibility: visible; }
+    #kp-printable { position: absolute; left: 0; top: 0; width: 100%; display: block !important; }
+  }
 </style>
 </head>
 <body class="antialiased min-h-screen flex flex-col md:flex-row">
@@ -189,167 +194,182 @@
       </div>
     </section>
 
-    <!-- TAB 2: SMART PROPOSAL (КП GENERATOR) -->
+        <!-- TAB 2: SMART PROPOSAL (КП GENERATOR v2) -->
     <section id="tab-proposals" class="hidden space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-extrabold font-bebas tracking-wide">Умная система выставления коммерческих предложений (КП)</h1>
-        <div class="text-xs text-neutral-500 font-semibold">1С Интеграция цен автоподгружена</div>
+        <div class="flex items-center gap-3">
+          <span id="kp-status-badge" class="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-1.5 rounded-full border border-amber-200">Черновик</span>
+          <span class="text-xs text-neutral-500 font-semibold">1С Интеграция: онлайн</span>
+        </div>
       </div>
 
-      <div class="grid lg:grid-cols-2 gap-8 items-start">
-        <!-- Configuration Card -->
-        <div class="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
-          <h2 class="text-xl font-bold font-bebas tracking-wider border-b border-neutral-100 pb-3">Шаг 1: Настройки предложения</h2>
+      <div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm grid lg:grid-cols-4 gap-4 items-end">
+        <div class="lg:col-span-2">
+          <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Клиент из CRM (Битрикс24)</label>
+          <select id="kp-client-select" onchange="onClientChange()" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:border-hhb outline-none bg-white">
+            <option value="">-- Выберите клиента --</option>
+          </select>
+          <div id="kp-client-email" class="text-[11px] text-neutral-500 mt-1.5 hidden"></div>
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Общая скидка КП</label>
+          <div class="flex gap-2">
+            <input id="kp-global-discount" type="number" min="0" max="50" value="0" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:border-hhb outline-none" onchange="setGlobalDiscount()">
+            <button onclick="setGlobalDiscount()" class="bg-hhb hover:bg-hhb-dark text-white px-4 rounded-xl text-xs font-bold transition">Применить</button>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="createNewProposal()" class="flex-1 bg-neutral-900 hover:bg-black text-white text-xs py-3 rounded-xl font-bold uppercase tracking-wider transition">Новое КП</button>
+          <button onclick="sendProposalEmail()" id="btn-send-email" disabled class="flex-1 bg-hhb hover:bg-hhb-dark disabled:bg-neutral-300 disabled:cursor-not-allowed text-white text-xs py-3 rounded-xl font-bold uppercase tracking-wider transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Отправить КП
+          </button>
+        </div>
+      </div>
 
-          <!-- Client Selector -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Выберите клиента из CRM (Битрикс24)</label>
-            <select id="kp-client" class="w-full rounded-xl border border-neutral-300 px-4 py-3 text-sm focus:border-hhb outline-none">
-              <option value="agroeco">ООО "АГРОЭКО" (Крупный опт, Холдинг)</option>
-              <option value="econiva">ООО "ЭКОНИВА-ЧЕРНОЗЕМЬЕ" (Спец-цены)</option>
-              <option value="miratorg">АПХ "МИРАТОРГ" (Стандартный B2B)</option>
-              <option value="rusagro">ГК "РУСАГРО" (Новый клиент)</option>
-              <option value="other">Частный агроном / Разовый заказ</option>
+      <div class="grid lg:grid-cols-5 gap-6 items-start">
+        <!-- LEFT: SKU CATALOG -->
+        <div class="lg:col-span-3 bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-neutral-100 pb-3">
+            <h2 class="text-lg font-bold font-bebas tracking-wider">Каталог SKU (Выбор позиций)</h2>
+            <span id="catalog-count" class="text-[10px] font-bold text-neutral-500 bg-neutral-100 px-2 py-1 rounded">0 позиций</span>
+          </div>
+          <!-- Filters -->
+          <div class="grid sm:grid-cols-4 gap-2">
+            <input id="cat-search" type="text" placeholder="Поиск по артикулу..." oninput="filterCatalog()" class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-hhb">
+            <select id="cat-category" onchange="filterCatalog()" class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-hhb bg-white">
+              <option value="all">Все категории</option>
+              <option value="housing">Корпусные</option>
+              <option value="ball">Шариковые</option>
+              <option value="roller">Роликовые</option>
+              <option value="stainless">Нержавеющие</option>
+              <option value="cuffs">Сальники</option>
             </select>
+            <input id="cat-dmin" type="number" placeholder="d мин (мм)" oninput="filterCatalog()" class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-hhb">
+            <input id="cat-dmax" type="number" placeholder="d макс (мм)" oninput="filterCatalog()" class="w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs outline-none focus:border-hhb">
           </div>
-
-          <!-- Product Presets -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Выберите номенклатурный пакет (из 1С)</label>
-            <div class="grid grid-cols-2 gap-3">
-              <button onclick="setProductPreset('agro')" class="rounded-xl border-2 border-neutral-200 hover:border-hhb p-3 text-left text-xs font-bold transition focus:border-hhb">
-                🌾 СЕЛЬХОЗ ПАКЕТ
-                <div class="text-[10px] text-neutral-500 font-medium mt-1">Корпусные узлы, UC, UCP, UCF для норий и почвообработки</div>
-              </button>
-              <button onclick="setProductPreset('industrial')" class="rounded-xl border-2 border-neutral-200 hover:border-hhb p-3 text-left text-xs font-bold transition focus:border-hhb">
-                🏭 ПРОМ-ТЯЖ ПАКЕТ
-                <div class="text-[10px] text-neutral-500 font-medium mt-1">Роликовые сферические подшипники 223, зазоры C3, T41A</div>
-              </button>
-            </div>
+          <!-- Catalog Table -->
+          <div class="overflow-x-auto max-h-[420px] overflow-y-auto">
+            <table class="w-full text-[11px] text-left">
+              <thead class="bg-neutral-50 text-neutral-500 uppercase text-[9px] font-bold sticky top-0 z-10">
+                <tr class="border-b border-neutral-200">
+                  <th class="px-3 py-2">Артикул</th>
+                  <th class="px-3 py-2">Тип</th>
+                  <th class="px-3 py-2 text-center">d×D×B</th>
+                  <th class="px-3 py-2 text-center">Бренд</th>
+                  <th class="px-3 py-2 text-right">Цена</th>
+                  <th class="px-3 py-2 text-center">Добавить</th>
+                </tr>
+              </thead>
+              <tbody id="catalog-table-body" class="divide-y divide-neutral-100">
+              </tbody>
+            </table>
           </div>
-
-          <!-- Discount Selector (Easy selection) -->
-          <div>
-            <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Выберите скидку для этого клиента</label>
-            <div class="grid grid-cols-4 gap-2">
-              <button onclick="setKpDiscount(0)" id="dc-0" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition active-tab">0%<br><span class="text-[9px] font-normal text-white/70">База</span></button>
-              <button onclick="setKpDiscount(10)" id="dc-10" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition">10%<br><span class="text-[9px] font-normal text-neutral-500">Дилер</span></button>
-              <button onclick="setKpDiscount(15)" id="dc-15" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition">15%<br><span class="text-[9px] font-normal text-neutral-500">Партнер</span></button>
-              <button onclick="setKpDiscount(20)" id="dc-20" class="disc-btn py-3 rounded-xl border border-neutral-200 hover:border-hhb text-xs font-bold transition">20%<br><span class="text-[9px] font-normal text-neutral-500">VIP</span></button>
-            </div>
-            <p class="mt-2 text-[10px] text-neutral-500">Цены пересчитаются автоматически по всей выбранной номенклатуре.</p>
-          </div>
-
-          <!-- Action Button -->
-          <button onclick="generateKp()" class="w-full bg-hhb hover:bg-hhb-dark text-white text-sm py-4 rounded-xl font-bold uppercase tracking-wider transition shadow-lg shadow-hhb/10">Сформировать готовый каталог КП</button>
         </div>
 
-        <!-- Output Preview Panel -->
-        <div class="bg-white p-6 md:p-8 rounded-2xl border border-neutral-200 shadow-sm space-y-6">
+        <!-- RIGHT: CURRENT PROPOSAL -->
+        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm space-y-4">
           <div class="flex items-center justify-between border-b border-neutral-100 pb-3">
-            <h2 class="text-xl font-bold font-bebas tracking-wider">Предпросмотр коммерческого предложения</h2>
-            <button onclick="window.print()" class="text-xs text-hhb hover:underline flex items-center gap-1">
-              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
-              Печать / Сохранить PDF
+            <h2 class="text-lg font-bold font-bebas tracking-wider">Текущее КП <span id="kp-number" class="text-neutral-400 text-sm">#---</span></h2>
+            <button onclick="window.print()" class="text-[10px] text-hhb hover:underline flex items-center gap-1 font-semibold">
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+              Печать
             </button>
           </div>
 
-          <!-- Document Box -->
-          <div id="kp-document" class="border border-neutral-300 p-8 rounded-xl space-y-6 text-sm bg-white shadow-lg min-h-[500px]">
-            <!-- Header Letterhead -->
-            <div class="flex items-start justify-between border-b-2 border-hhb pb-6">
-              <div>
-                <div class="flex items-center gap-2">
-                  <span class="inline-block w-6 h-6 rounded-full bg-hhb"></span>
-                  <span class="font-extrabold tracking-wide font-bebas text-xl text-ink-900">КОМПОНЕНТ СЕРВИС<span class="text-hhb">.</span></span>
-                </div>
-                <div class="text-[10px] text-neutral-500 font-bold uppercase tracking-wider mt-1">Официальный Дистрибьютор HHB & FKD в России</div>
-                <div class="text-[10px] text-neutral-400 mt-1">г. Воронеж, ул. Промышленная, 1 · Тел: +7 (473) 255-00-00 · csbrg.ru</div>
-              </div>
-              <div class="text-right text-xs">
-                <div class="text-white bg-hhb px-3 py-1 font-bold rounded uppercase tracking-wider text-[10px]">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</div>
-                <div class="font-bold text-neutral-800 mt-2 text-sm">Бланк № <span id="doc-id">542-M</span></div>
-                <div class="text-neutral-500 font-medium mt-0.5">Дата: 26.05.2026</div>
-              </div>
-            </div>
+          <!-- Proposal Items -->
+          <div class="overflow-x-auto max-h-[320px] overflow-y-auto">
+            <table class="w-full text-[11px] text-left">
+              <thead class="bg-neutral-50 text-neutral-500 uppercase text-[9px] font-bold">
+                <tr class="border-b border-neutral-200">
+                  <th class="px-2 py-2">Артикул</th>
+                  <th class="px-2 py-2 text-center">Кол</th>
+                  <th class="px-2 py-2 text-right">Скидка</th>
+                  <th class="px-2 py-2 text-right">Цена</th>
+                  <th class="px-2 py-2 text-center">✕</th>
+                </tr>
+              </thead>
+              <tbody id="proposal-items-body" class="divide-y divide-neutral-100">
+                <tr><td colspan="5" class="py-6 text-center text-neutral-400 text-[10px]">Выберите SKU из каталога слева</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-            <!-- Client Info & Welcome Text -->
-            <div class="grid grid-cols-2 gap-4 text-xs border-b border-neutral-100 pb-4">
-              <div>
-                <div class="text-neutral-400 uppercase font-bold tracking-wider text-[9px] mb-1">ПОЛУЧАТЕЛЬ (КЛИЕНТ)</div>
-                <div class="font-bold text-neutral-800 text-sm" id="doc-client">Выбирите клиента из списка</div>
-                <div class="text-neutral-500 mt-1">Внимание: Руководителю отдела снабжения / Главному инженеру</div>
-              </div>
-              <div class="text-right">
-                <div class="text-neutral-400 uppercase font-bold tracking-wider text-[9px] mb-1">УСЛОВИЯ ПОСТАВКИ</div>
-                <div class="font-bold text-neutral-800">1 день (В наличии на складе)</div>
-                <div class="text-neutral-500 mt-1">Гарантия на продукцию: 12 месяцев</div>
-              </div>
+          <!-- Totals -->
+          <div class="border-t border-neutral-200 pt-4 space-y-2">
+            <div class="flex justify-between text-xs">
+              <span class="text-neutral-500">Сумма без скидки:</span>
+              <span id="prop-subtotal" class="font-bold">0 ₽</span>
             </div>
-
-            <!-- Introductory Text -->
-            <div class="text-xs text-neutral-600 leading-relaxed italic">
-              «Выражаем Вам свое почтение и предлагаем рассмотреть возможность поставки высококачественной подшипниковой продукции брендов HHB (Премиум) и FKD (Стандарт) напрямую от эксклюзивного дистрибьютора в РФ. Ниже представлены согласованные индивидуальные цены с учетом Вашего партнерского статуса.»
+            <div class="flex justify-between text-xs">
+              <span class="text-neutral-500">Глобальная скидка:</span>
+              <span id="prop-global-disc-display" class="font-bold text-hhb">0%</span>
             </div>
-
-            <!-- Table of Items -->
-            <div class="overflow-x-auto">
-              <table class="w-full text-xs text-left">
-                <thead>
-                  <tr class="border-b-2 border-neutral-200 text-neutral-400 uppercase text-[9px] font-bold tracking-wider">
-                    <th class="py-3">Позиция (Номенклатура 1С)</th>
-                    <th class="py-3 text-center">Кол-во (шт)</th>
-                    <th class="py-3 text-right">База (₽)</th>
-                    <th class="py-3 text-right">Скидка</th>
-                    <th class="py-3 text-right">Цена со скидкой (₽)</th>
-                    <th class="py-3 text-right">Итого (₽)</th>
-                  </tr>
-                </thead>
-                <tbody id="kp-items-body" class="divide-y divide-neutral-100">
-                  <tr>
-                    <td colspan="6" class="py-8 text-center text-neutral-500">Пожалуйста, выберите номенклатурный пакет слева и нажмите «Сформировать КП»</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="flex justify-between text-sm font-extrabold font-bebas tracking-wide border-t border-neutral-100 pt-2">
+              <span>ИТОГО КП:</span>
+              <span id="prop-total" class="text-hhb">0 ₽</span>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <!-- Summary & Signatures -->
-            <div class="border-t-2 border-neutral-100 pt-6 flex justify-between items-end">
-              <!-- Official stamp and signatures -->
-              <div class="flex items-center gap-6">
-                <div class="text-xs">
-                  <div class="text-neutral-400 font-semibold text-[9px] uppercase tracking-wider mb-2">ОТГРУЗКУ РАЗРЕШИЛ</div>
-                  <div class="font-bold text-neutral-800">Селезнев С. В.</div>
-                  <div class="text-[10px] text-neutral-500 mt-0.5">Генеральный директор ООО "КС"</div>
-                </div>
-                <!-- Mini Stamp/Sign Mockup -->
-                <div class="relative w-20 h-20 opacity-80 shrink-0 select-none pointer-events-none">
-                  <!-- Sign -->
-                  <svg class="absolute top-4 left-2 w-16 h-12 text-blue-600" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.5">
-                    <path d="M10 80 Q25 10 40 70 T70 30 Q90 90 95 60"/>
-                    <path d="M30 50 L80 52"/>
-                  </svg>
-                  <!-- Stamp -->
-                  <div class="absolute inset-0 rounded-full border-2 border-blue-500/40 flex items-center justify-center text-center p-1 text-[7px] text-blue-500/60 font-bold uppercase rotate-12">
-                    ООО "КОМПОНЕНТ СЕРВИС"<br>М.П.<br>ВОРОНЕЖ
-                  </div>
-                </div>
-              </div>
-
-              <!-- Grand Total -->
-              <div class="text-right space-y-1">
-                <div class="text-xs text-neutral-500 font-medium">Ваша индивидуальная скидка: <span id="doc-discount" class="font-bold text-hhb">0%</span></div>
-                <div class="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider">Итоговая сумма коммерческого предложения</div>
-                <div class="text-3xl font-extrabold font-bebas tracking-wide text-ink-900" id="doc-total">0 ₽</div>
-                <div class="text-[9px] text-neutral-500 font-medium">Цены указаны в рублях РФ с учетом НДС (20%)</div>
-              </div>
+      <!-- PRINTABLE PREVIEW -->
+      <div id="kp-printable" class="hidden print:block bg-white p-8 border border-neutral-300 rounded-xl space-y-6 text-sm shadow-lg">
+        <div class="flex items-start justify-between border-b-2 border-hhb pb-6">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-block w-6 h-6 rounded-full bg-hhb"></span>
+              <span class="font-extrabold tracking-wide font-bebas text-xl text-ink-900">КОМПОНЕНТ СЕРВИС<span class="text-hhb">.</span></span>
             </div>
+            <div class="text-[10px] text-neutral-500 font-bold uppercase tracking-wider mt-1">Официальный Дистрибьютор HHB & FKD в России</div>
+            <div class="text-[10px] text-neutral-400 mt-1">г. Воронеж, ул. Промышленная, 1 · Тел: +7 (473) 255-00-00 · csbrg.ru</div>
+          </div>
+          <div class="text-right text-xs">
+            <div class="text-white bg-hhb px-3 py-1 font-bold rounded uppercase tracking-wider text-[10px]">КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ</div>
+            <div class="font-bold text-neutral-800 mt-2 text-sm">Бланк № <span id="print-doc-id">---</span></div>
+            <div class="text-neutral-500 font-medium mt-0.5">Дата: <span id="print-doc-date">---</span></div>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4 text-xs border-b border-neutral-100 pb-4">
+          <div>
+            <div class="text-neutral-400 uppercase font-bold tracking-wider text-[9px] mb-1">ПОЛУЧАТЕЛЬ</div>
+            <div class="font-bold text-neutral-800 text-sm" id="print-client-name">---</div>
+            <div class="text-neutral-500 mt-1" id="print-client-email">---</div>
+          </div>
+          <div class="text-right">
+            <div class="text-neutral-400 uppercase font-bold tracking-wider text-[9px] mb-1">УСЛОВИЯ ПОСТАВКИ</div>
+            <div class="font-bold text-neutral-800">1 день (В наличии на складе)</div>
+            <div class="text-neutral-500 mt-1">Гарантия: 12 месяцев</div>
+          </div>
+        </div>
+        <div class="text-xs text-neutral-600 leading-relaxed italic">
+          «Выражаем Вам свое почтение и предлагаем рассмотреть возможность поставки высококачественной подшипниковой продукции брендов HHB (Премиум) и FKD (Стандарт) напрямую от эксклюзивного дистрибьютора в РФ.»
+        </div>
+        <table class="w-full text-xs text-left">
+          <thead>
+            <tr class="border-b-2 border-neutral-200 text-neutral-400 uppercase text-[9px] font-bold tracking-wider">
+              <th class="py-2">Позиция</th>
+              <th class="py-2 text-center">Кол-во</th>
+              <th class="py-2 text-right">База</th>
+              <th class="py-2 text-right">Скидка</th>
+              <th class="py-2 text-right">Цена</th>
+              <th class="py-2 text-right">Итого</th>
+            </tr>
+          </thead>
+          <tbody id="print-items-body" class="divide-y divide-neutral-100">
+          </tbody>
+        </table>
+        <div class="flex justify-end pt-4 border-t border-neutral-200">
+          <div class="text-right space-y-1">
+            <div class="text-xs text-neutral-500 font-medium">Глобальная скидка: <span id="print-discount" class="font-bold text-hhb">0%</span></div>
+            <div class="text-[10px] text-neutral-400 font-semibold uppercase tracking-wider">Итоговая сумма</div>
+            <div class="text-3xl font-extrabold font-bebas tracking-wide text-ink-900" id="print-total">0 ₽</div>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- TAB 3: PROCUREMENT REPORTS -->
+<!-- TAB 3: PROCUREMENT REPORTS -->
     <section id="tab-reports" class="hidden space-y-6">
       <div class="flex items-center justify-between">
         <h1 class="text-3xl font-extrabold font-bebas tracking-wide">Генератор отчетов по закупкам и поставкам</h1>
@@ -673,76 +693,257 @@
         btn.classList.remove('active-tab');
       });
       document.getElementById('btn-' + tabId).classList.add('active-tab');
+
+      if (tabId === 'proposals') {
+        initProposalTab();
+      }
     }
 
-    /* ========== SMART KP GENERATOR LOGIC ========== */
-    let currentDiscount = 0;
-    let selectedPreset = 'agro';
+    /* ========== SMART KP GENERATOR LOGIC v2 (API-driven) ========== */
+    const API_BASE = 'http://127.0.0.1:8000';
+    let clientsData = [];
+    let skusData = [];
+    let currentProposalId = null;
+    let currentClient = null;
 
-    const presets = {
-      agro: [
-        { sku: 'HHB UCP206 (корпусной)', qty: 50, price: 1180 },
-        { sku: 'HHB UC210 (самоустан.)', qty: 100, price: 690 },
-        { sku: 'FKD UCF208 (узел)', qty: 40, price: 850 }
-      ],
-      industrial: [
-        { sku: 'HHB 22315-E1-T41A (вибро)', qty: 10, price: 7950 },
-        { sku: 'HHB 6205-2RS C3 Premium', qty: 200, price: 420 },
-        { sku: 'HHB NU 312 ECP', qty: 15, price: 4300 }
-      ]
-    };
-
-    function setProductPreset(preset) {
-      selectedPreset = preset;
-      generateKp();
+    async function apiGet(path) {
+      const r = await fetch(API_BASE + path);
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    }
+    async function apiPost(path, body) {
+      const r = await fetch(API_BASE + path, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'HTTP '+r.status); }
+      return r.json();
+    }
+    async function apiPut(path, body) {
+      const r = await fetch(API_BASE + path, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'HTTP '+r.status); }
+      return r.json();
+    }
+    async function apiDelete(path) {
+      const r = await fetch(API_BASE + path, {method:'DELETE'});
+      if (!r.ok) { const e = await r.json(); throw new Error(e.detail || 'HTTP '+r.status); }
+      return r.json();
     }
 
-    function setKpDiscount(discount) {
-      currentDiscount = discount;
-      document.querySelectorAll('.disc-btn').forEach(btn => {
-        btn.classList.remove('active-tab');
-      });
-      document.getElementById('dc-' + discount).classList.add('active-tab');
-      generateKp();
+    async function loadClients() {
+      try {
+        clientsData = await apiGet('/api/clients');
+        const sel = document.getElementById('kp-client-select');
+        sel.innerHTML = '<option value="">-- Выберите клиента --</option>';
+        clientsData.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name + (c.discount ? ` (скидка ${c.discount}%)` : '');
+          sel.appendChild(opt);
+        });
+      } catch (e) { console.error('Ошибка загрузки клиентов:', e); }
     }
 
-    function generateKp() {
-      const clientSelect = document.getElementById('kp-client');
-      const clientName = clientSelect.options[clientSelect.selectedIndex].text;
-      
-      document.getElementById('doc-client').textContent = clientName;
-      
-      // Update discount text in multiple elements if needed
-      const discElements = document.querySelectorAll('#doc-discount');
-      discElements.forEach(el => el.textContent = currentDiscount + '%');
-      
-      const items = presets[selectedPreset];
-      const tbody = document.getElementById('kp-items-body');
+    async function loadCatalog() {
+      try {
+        skusData = await apiGet('/api/catalog/skus');
+        filterCatalog();
+      } catch (e) { console.error('Ошибка загрузки каталога:', e); }
+    }
+
+    function filterCatalog() {
+      const search = document.getElementById('cat-search').value.toLowerCase();
+      const cat = document.getElementById('cat-category').value;
+      const dMin = parseFloat(document.getElementById('cat-dmin').value) || 0;
+      const dMax = parseFloat(document.getElementById('cat-dmax').value) || 9999;
+      const tbody = document.getElementById('catalog-table-body');
       tbody.innerHTML = '';
-
-      let grandTotal = 0;
-
-      items.forEach(item => {
-        const discountedPrice = Math.round(item.price * (1 - currentDiscount / 100));
-        const itemTotal = discountedPrice * item.qty;
-        grandTotal += itemTotal;
-
+      let count = 0;
+      skusData.forEach(s => {
+        if (cat !== 'all' && s.category !== cat) return;
+        if (search && !s.sku.toLowerCase().includes(search) && !s.type.toLowerCase().includes(search)) return;
+        if (s.d !== null && s.d !== undefined) {
+          if (s.d < dMin || s.d > dMax) return;
+        }
+        count++;
+        const dims = (s.d||'-') + '×' + (s.D||'-') + '×' + (s.B||'-');
         tbody.innerHTML += `
-          <tr class="border-b border-neutral-100 text-xs hover:bg-neutral-100/50 transition">
-            <td class="py-3 font-semibold text-neutral-800">${item.sku}</td>
-            <td class="py-3 text-center font-semibold text-neutral-700">${item.qty}</td>
-            <td class="py-3 text-right text-neutral-400 font-medium">${item.price.toLocaleString('ru-RU')} ₽</td>
-            <td class="py-3 text-right text-emerald-600 font-bold">-${currentDiscount}%</td>
-            <td class="py-3 text-right text-neutral-800 font-semibold">${discountedPrice.toLocaleString('ru-RU')} ₽</td>
-            <td class="py-3 text-right font-extrabold text-hhb">${itemTotal.toLocaleString('ru-RU')} ₽</td>
-          </tr>
-        `;
+          <tr class="hover:bg-neutral-50 transition">
+            <td class="px-3 py-2 font-semibold text-neutral-800">${s.sku}</td>
+            <td class="px-3 py-2 text-neutral-600">${s.type}</td>
+            <td class="px-3 py-2 text-center text-[10px] font-bold text-neutral-500">${dims}</td>
+            <td class="px-3 py-2 text-center text-[10px] font-bold uppercase" style="color:${s.brand==='HHB'?'#C8102E':'#333'}">${s.brand}</td>
+            <td class="px-3 py-2 text-right font-bold">${Math.round(s.price).toLocaleString('ru-RU')} ₽</td>
+            <td class="px-3 py-2 text-center">
+              <button onclick="addSkuToProposal(${s.id}, 1, 0)" class="bg-hhb hover:bg-hhb-dark text-white text-[10px] font-bold px-2 py-1 rounded transition">+</button>
+            </td>
+          </tr>`;
       });
-
-      document.getElementById('doc-total').textContent = grandTotal.toLocaleString('ru-RU') + ' ₽';
-      document.getElementById('doc-id').textContent = Math.floor(Math.random() * (999 - 100 + 1) + 100) + "-M";
+      document.getElementById('catalog-count').textContent = count + ' позиций';
     }
 
+    function onClientChange() {
+      const clientId = document.getElementById('kp-client-select').value;
+      currentClient = clientsData.find(c => String(c.id) === clientId);
+      const emailDiv = document.getElementById('kp-client-email');
+      if (currentClient && currentClient.email) {
+        emailDiv.textContent = 'Email: ' + currentClient.email;
+        emailDiv.classList.remove('hidden');
+      } else {
+        emailDiv.classList.add('hidden');
+      }
+      if (currentClient && currentClient.discount) {
+        document.getElementById('kp-global-discount').value = currentClient.discount;
+      }
+    }
+
+    async function createNewProposal() {
+      const clientId = document.getElementById('kp-client-select').value;
+      if (!clientId) { alert('Сначала выберите клиента из CRM'); return; }
+      const discount = parseInt(document.getElementById('kp-global-discount').value) || 0;
+      try {
+        const res = await apiPost('/api/proposals', {client_id: parseInt(clientId), title: '', discount_global: discount});
+        currentProposalId = res.proposal_id;
+        document.getElementById('kp-number').textContent = '#' + currentProposalId;
+        document.getElementById('btn-send-email').disabled = false;
+        document.getElementById('kp-status-badge').textContent = 'Черновик #' + currentProposalId;
+        document.getElementById('proposal-items-body').innerHTML = '<tr><td colspan="5" class="py-6 text-center text-neutral-400 text-[10px]">Добавьте позиции из каталога</td></tr>';
+        updateTotals(0,0,0);
+      } catch (e) { alert('Ошибка создания КП: ' + e.message); }
+    }
+
+    async function addSkuToProposal(skuId, qty, disc) {
+      if (!currentProposalId) { await createNewProposal(); }
+      if (!currentProposalId) return;
+      try {
+        await apiPost('/api/proposals/' + currentProposalId + '/items', {sku_id: skuId, qty: qty, discount_item: disc});
+        await refreshProposal();
+      } catch (e) { alert('Ошибка добавления: ' + e.message); }
+    }
+
+    async function removeItem(itemId) {
+      if (!currentProposalId) return;
+      try {
+        await apiDelete('/api/proposals/' + currentProposalId + '/items/' + itemId);
+        await refreshProposal();
+      } catch (e) { alert('Ошибка удаления: ' + e.message); }
+    }
+
+    async function updateItemQty(itemId, newQty) {
+      if (!currentProposalId) return;
+      newQty = parseInt(newQty) || 1;
+      try {
+        const proposal = await apiGet('/api/proposals/' + currentProposalId);
+        const item = proposal.items.find(i => i.id === itemId);
+        const disc = item ? item.discount_item : 0;
+        await apiPut('/api/proposals/' + currentProposalId + '/items/' + itemId, {sku_id: 0, qty: newQty, discount_item: disc});
+        await refreshProposal();
+      } catch (e) { console.error(e); }
+    }
+
+    async function updateItemDiscount(itemId, newDisc) {
+      if (!currentProposalId) return;
+      newDisc = parseInt(newDisc) || 0;
+      try {
+        const proposal = await apiGet('/api/proposals/' + currentProposalId);
+        const item = proposal.items.find(i => i.id === itemId);
+        const qty = item ? item.qty : 1;
+        await apiPut('/api/proposals/' + currentProposalId + '/items/' + itemId, {sku_id: 0, qty: qty, discount_item: newDisc});
+        await refreshProposal();
+      } catch (e) { console.error(e); }
+    }
+
+    async function setGlobalDiscount() {
+      if (!currentProposalId) { alert('Сначала создайте новое КП'); return; }
+      const disc = parseInt(document.getElementById('kp-global-discount').value) || 0;
+      try {
+        await apiPost('/api/proposals/' + currentProposalId + '/discount', {discount_global: disc});
+        await refreshProposal();
+      } catch (e) { alert('Ошибка: ' + e.message); }
+    }
+
+    async function refreshProposal() {
+      if (!currentProposalId) return;
+      try {
+        const p = await apiGet('/api/proposals/' + currentProposalId);
+        const tbody = document.getElementById('proposal-items-body');
+        if (p.items.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="py-6 text-center text-neutral-400 text-[10px]">Добавьте позиции из каталога</td></tr>';
+        } else {
+          tbody.innerHTML = p.items.map(item => `
+            <tr class="hover:bg-neutral-50 transition">
+              <td class="px-2 py-2 font-semibold text-neutral-800">${item.sku}</td>
+              <td class="px-2 py-2 text-center">
+                <input type="number" min="1" value="${item.qty}" onchange="updateItemQty(${item.id}, this.value)" class="w-12 text-center text-[10px] border border-neutral-200 rounded py-0.5">
+              </td>
+              <td class="px-2 py-2 text-center">
+                <input type="number" min="0" max="50" value="${item.discount_item}" onchange="updateItemDiscount(${item.id}, this.value)" class="w-10 text-center text-[10px] border border-neutral-200 rounded py-0.5">
+              </td>
+              <td class="px-2 py-2 text-right font-bold text-neutral-800">${Math.round(item.price_final).toLocaleString('ru-RU')} ₽</td>
+              <td class="px-2 py-2 text-center">
+                <button onclick="removeItem(${item.id})" class="text-neutral-400 hover:text-hhb font-bold">✕</button>
+              </td>
+            </tr>
+          `).join('');
+        }
+        updateTotals(p.total_amount, p.discount_global, p.items);
+        updatePrintPreview(p);
+      } catch (e) { console.error('Ошибка обновления КП:', e); }
+    }
+
+    function updateTotals(total, globalDisc, items) {
+      let subtotal = 0;
+      (items || []).forEach(i => {
+        subtotal += (i.price_base || i.price_final) * i.qty;
+      });
+      document.getElementById('prop-subtotal').textContent = Math.round(subtotal).toLocaleString('ru-RU') + ' ₽';
+      document.getElementById('prop-global-disc-display').textContent = globalDisc + '%';
+      document.getElementById('prop-total').textContent = Math.round(total).toLocaleString('ru-RU') + ' ₽';
+    }
+
+    function updatePrintPreview(p) {
+      if (!p) return;
+      document.getElementById('print-doc-id').textContent = 'KP-' + p.id;
+      document.getElementById('print-doc-date').textContent = p.created_at ? p.created_at.slice(0,10) : '---';
+      document.getElementById('print-client-name').textContent = p.client_name || '---';
+      document.getElementById('print-client-email').textContent = p.client_email || '';
+      document.getElementById('print-discount').textContent = p.discount_global + '%';
+      document.getElementById('print-total').textContent = Math.round(p.total_amount).toLocaleString('ru-RU') + ' ₽';
+      const tbody = document.getElementById('print-items-body');
+      tbody.innerHTML = (p.items || []).map(i => {
+        const lineTotal = Math.round(i.price_final * i.qty);
+        return `<tr>
+          <td class="py-2 border-b border-neutral-100">${i.sku}<br><span class="text-[9px] text-neutral-500">${i.type}</span></td>
+          <td class="py-2 text-center border-b border-neutral-100">${i.qty}</td>
+          <td class="py-2 text-right border-b border-neutral-100">${Math.round(i.price_base).toLocaleString('ru-RU')} ₽</td>
+          <td class="py-2 text-right border-b border-neutral-100">${i.discount_item}%</td>
+          <td class="py-2 text-right border-b border-neutral-100">${Math.round(i.price_final).toLocaleString('ru-RU')} ₽</td>
+          <td class="py-2 text-right border-b border-neutral-100 font-bold">${lineTotal.toLocaleString('ru-RU')} ₽</td>
+        </tr>`;
+      }).join('');
+    }
+
+    async function sendProposalEmail() {
+      if (!currentProposalId) return;
+      const btn = document.getElementById('btn-send-email');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Отправка...';
+      btn.disabled = true;
+      try {
+        await apiPost('/api/proposals/' + currentProposalId + '/send', {});
+        alert('КП успешно отправлено на email клиента!');
+        document.getElementById('kp-status-badge').textContent = 'Отправлено #' + currentProposalId;
+        document.getElementById('kp-status-badge').className = 'text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200';
+      } catch (e) {
+        alert('Ошибка отправки: ' + e.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // Init on tab open
+    function initProposalTab() {
+      loadClients();
+      loadCatalog();
+    }
     /* ========== PROCUREMENT REPORTS DATA & LOGIC ========== */
     const rawReportDatabase = [
       { client: 'ООО "АГРОЭКО"', sku: 'HHB UCP206 Корпус', brand: 'HHB', qty: 120, sum: 59000, status: 'Доставлено' },

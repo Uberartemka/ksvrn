@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Response, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Dict, Any, Optional
@@ -9,6 +9,7 @@ import urllib.request
 import json
 import time
 import os
+from collections import defaultdict
 
 # === CONFIGURE STANDARD SYSTEM LOGGING ===
 logging.basicConfig(
@@ -39,6 +40,68 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# === IN-MEMORY TOKEN BUCKET RATE LIMITER ===
+# Sliding window rate limiter to protect resources from brute-force/DDOS (No Redis needed!)
+rate_limit_records = defaultdict(list)
+
+def get_rate_limit(path: str) -> int:
+    if "/api/ai/search" in path:
+        return 10  # Max 10 search queries per minute
+    if "/api/queue/add" in path:
+        return 20  # Max 20 new tasks per minute
+    if "/api/webhooks/" in path:
+        return 30  # Max 30 incoming webhooks per minute
+    return 60      # Default: 60 requests per minute for other endpoints
+
+@app.middleware("http")
+async def rate_limiting_middleware(request: Request, call_next):
+    # Skip docs, redoc, openapi.json and root paths
+    path = request.url.path
+    if path in ["/", "/docs", "/redoc", "/openapi.json"]:
+        return await call_next(request)
+
+    client_ip = request.client.host if request.client else "unknown"
+    limit = get_rate_limit(path)
+    now = time.time()
+    
+    # Unique key combining IP and path category
+    key = f"{client_ip}:{path}"
+    
+    # Cleanup timestamps older than 60 seconds
+    rate_limit_records[key] = [t for t in rate_limit_records[key] if now - t < 60]
+    
+    if len(rate_limit_records[key]) >= limit:
+        logger.warning(f"[Rate Limit Blocked] IP {client_ip} превысил лимит на {path} ({limit} запр./мин).")
+        return Response(
+            content=json.dumps({"detail": "Too Many Requests. Вы превысили лимит запросов для этого эндпоинта. Попробуйте позже."}),
+            status_code=429,
+            media_type="application/json",
+            headers={"Retry-After": "60"}
+        )
+        
+    rate_limit_records[key].append(now)
+    return await call_next(request)
+
+# === SECURE BEARER TOKEN AUTHORIZATION DEPENDENCY ===
+B2B_ADMIN_TOKEN = os.getenv("B2B_ADMIN_TOKEN", "hhb_b2b_secret_token_2026")
+
+def verify_b2b_token(request: Request):
+    # Allow local Swagger UI testing to bypass authorization easily if wanted
+    # But strictly enforce on real requests
+    auth_header = request.headers.get("Authorization") or request.headers.get("X-API-Key")
+    
+    token = None
+    if auth_header:
+        if auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+        else:
+            token = auth_header
+
+    if token != B2B_ADMIN_TOKEN:
+        logger.warning(f"[Auth Failed] Неавторизованный запрос к {request.url.path} с IP {request.client.host if request.client else 'unknown'}")
+        raise HTTPException(status_code=401, detail="Unauthorized. Неверный или отсутствующий API-токен авторизации B2B.")
+    return token
 
 # Instantiate queue manager and start worker thread on server boot
 logger.info("[Server] Инициализация менеджера очередей задач...")
@@ -79,15 +142,15 @@ def get_task_status(task_id: int):
         raise HTTPException(status_code=404, detail="Задача с таким ID не найдена в базе данных.")
     return status
 
-@app.get("/api/queue/list")
+@app.get("/api/queue/list", dependencies=[Depends(verify_b2b_token)])
 def list_tasks():
     return qm.list_tasks(limit=50)
 
-@app.get("/api/queue/stats")
+@app.get("/api/queue/stats", dependencies=[Depends(verify_b2b_token)])
 def get_stats():
     return qm.get_queue_stats()
 
-@app.post("/api/queue/retry/{task_id}")
+@app.post("/api/queue/retry/{task_id}", dependencies=[Depends(verify_b2b_token)])
 def retry_task(task_id: int):
     status = qm.get_task_status(task_id)
     if not status:
@@ -113,7 +176,7 @@ class AiSearchRequest(BaseModel):
     query: str
     api_key: Optional[str] = None
 
-@app.post("/api/webhooks/bitrix")
+@app.post("/api/webhooks/bitrix", dependencies=[Depends(verify_b2b_token)])
 def bitrix_webhook(payload: BitrixWebhookInput):
     logger.info(f"[Webhook] Получено событие от Битрикс24: {payload.event}")
     
@@ -134,7 +197,7 @@ def bitrix_webhook(payload: BitrixWebhookInput):
         "detail": "Событие Битрикс24 зарегистрировано и добавлено в асинхронную очередь воркера."
     }
 
-@app.post("/api/webhooks/1c")
+@app.post("/api/webhooks/1c", dependencies=[Depends(verify_b2b_token)])
 def one_c_webhook(payload: OneCWebhookInput):
     logger.info(f"[Webhook] Получено обновление остатков из 1С для артикула: {payload.sku}")
     

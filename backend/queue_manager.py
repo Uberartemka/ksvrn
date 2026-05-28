@@ -1,15 +1,16 @@
-import sqlite3
+import psycopg2
 import json
 import time
 import threading
 import logging
+import os
 from datetime import datetime
 
-# === SQLite-Backed Robust Multithreaded Task Queue Manager ===
+# === PostgreSQL-Backed Robust Multithreaded Task Queue Manager ===
 # This manager provides a highly resilient, transactional FIFO queue
-# stored in SQLite. Ideal for background B2B integrations (1C, Bitrix24).
+# stored in PostgreSQL. Ideal for concurrent enterprise-grade B2B integrations (1C, Bitrix24).
 
-DB_PATH = "D:/pod/backend/queue.db"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/hhb_b2b")
 logger = logging.getLogger("HHB_B2B")
 
 class QueueManager:
@@ -21,37 +22,44 @@ class QueueManager:
 
     def init_db(self):
         with self.lock:
-            conn = sqlite3.connect(DB_PATH)
-            cursor = conn.cursor()
-            # Create tasks table
-            cursor.execute("""
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    task_type TEXT NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'pending',
-                    payload TEXT NOT NULL,
-                    retries INTEGER NOT NULL DEFAULT 0,
-                    max_retries INTEGER NOT NULL DEFAULT 3,
-                    error_message TEXT,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
-                )
-            """)
-            conn.commit()
-            conn.close()
+            try:
+                conn = psycopg2.connect(DATABASE_URL)
+                cursor = conn.cursor()
+                # Create tasks table using PostgreSQL dialect
+                cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tasks (
+                        id SERIAL PRIMARY KEY,
+                        task_type VARCHAR(100) NOT NULL,
+                        status VARCHAR(50) NOT NULL DEFAULT 'pending',
+                        payload TEXT NOT NULL,
+                        retries INTEGER NOT NULL DEFAULT 0,
+                        max_retries INTEGER NOT NULL DEFAULT 3,
+                        error_message TEXT,
+                        created_at VARCHAR(100) NOT NULL,
+                        updated_at VARCHAR(100) NOT NULL
+                    )
+                """)
+                conn.commit()
+                conn.close()
+                logger.info("[Database] Подключение к PostgreSQL и инициализация таблиц успешны.")
+            except Exception as e:
+                logger.error(f"[!] [Database Error] Ошибка подключения к PostgreSQL: {e}")
+                logger.error("Пожалуйста, убедитесь, что сервер PostgreSQL запущен и строка подключения в DATABASE_URL верна.")
 
     def add_task(self, task_type, payload, max_retries=3):
         now = datetime.now().isoformat()
         payload_json = json.dumps(payload)
         
         with self.lock:
-            conn = sqlite3.connect(DB_PATH)
+            conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
+            # In PostgreSQL we use %s and RETURNING id to get the inserted serial ID
             cursor.execute("""
                 INSERT INTO tasks (task_type, status, payload, max_retries, created_at, updated_at)
-                VALUES (?, 'pending', ?, ?, ?, ?)
+                VALUES (%s, 'pending', %s, %s, %s, %s)
+                RETURNING id
             """, (task_type, payload_json, max_retries, now, now))
-            task_id = cursor.lastrowid
+            task_id = cursor.fetchone()[0]
             conn.commit()
             conn.close()
             
@@ -59,9 +67,12 @@ class QueueManager:
         return task_id
 
     def get_task_status(self, task_id):
-        conn = sqlite3.connect(DB_PATH)
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, task_type, status, retries, max_retries, error_message, updated_at FROM tasks WHERE id = ?", (task_id,))
+        cursor.execute("""
+            SELECT id, task_type, status, retries, max_retries, error_message, updated_at 
+            FROM tasks WHERE id = %s
+        """, (task_id,))
         row = cursor.fetchone()
         conn.close()
         
@@ -73,9 +84,12 @@ class QueueManager:
         return None
 
     def list_tasks(self, limit=50):
-        conn = sqlite3.connect(DB_PATH)
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
-        cursor.execute("SELECT id, task_type, status, retries, max_retries, error_message, created_at FROM tasks ORDER BY id DESC LIMIT ?", (limit,))
+        cursor.execute("""
+            SELECT id, task_type, status, retries, max_retries, error_message, created_at 
+            FROM tasks ORDER BY id DESC LIMIT %s
+        """, (limit,))
         rows = cursor.fetchall()
         conn.close()
         
@@ -88,7 +102,7 @@ class QueueManager:
         return tasks
 
     def get_queue_stats(self):
-        conn = sqlite3.connect(DB_PATH)
+        conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         cursor.execute("SELECT status, COUNT(*) FROM tasks GROUP BY status")
         rows = cursor.fetchall()
@@ -102,12 +116,12 @@ class QueueManager:
     def retry_task(self, task_id):
         now = datetime.now().isoformat()
         with self.lock:
-            conn = sqlite3.connect(DB_PATH)
+            conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             cursor.execute("""
                 UPDATE tasks 
-                SET status = 'pending', retries = 0, error_message = NULL, updated_at = ?
-                WHERE id = ? AND status = 'failed'
+                SET status = 'pending', retries = 0, error_message = NULL, updated_at = %s
+                WHERE id = %s AND status = 'failed'
             """, (now, task_id))
             conn.commit()
             conn.close()
@@ -130,23 +144,34 @@ class QueueManager:
 
     def _worker_loop(self):
         while self.running:
-            task = self._claim_next_task()
-            if task:
-                self._process_task(task)
-            else:
-                time.sleep(2) # Sleep 2 seconds if no pending tasks
+            try:
+                task = self._claim_next_task()
+                if task:
+                    self._process_task(task)
+                else:
+                    time.sleep(2) # Sleep 2 seconds if no pending tasks
+            except Exception as e:
+                logger.error(f"[!] [Queue Worker Error] Сбой в цикле воркера: {e}")
+                time.sleep(5) # Sleep 5 seconds on database error before retrying
 
     def _claim_next_task(self):
         # Transactionally find the next pending task and claim it
         now = datetime.now().isoformat()
         with self.lock:
-            conn = sqlite3.connect(DB_PATH)
+            conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
-            cursor.execute("SELECT id, task_type, payload, retries, max_retries FROM tasks WHERE status = 'pending' ORDER BY id ASC LIMIT 1")
+            # Postgres supports SELECT ... FOR UPDATE for highly secure concurrent row-locking!
+            cursor.execute("""
+                SELECT id, task_type, payload, retries, max_retries 
+                FROM tasks 
+                WHERE status = 'pending' 
+                ORDER BY id ASC LIMIT 1 
+                FOR UPDATE SKIP LOCKED
+            """)
             row = cursor.fetchone()
             if row:
                 task_id, task_type, payload, retries, max_retries = row
-                cursor.execute("UPDATE tasks SET status = 'processing', updated_at = ? WHERE id = ?", (now, task_id))
+                cursor.execute("UPDATE tasks SET status = 'processing', updated_at = %s WHERE id = %s", (now, task_id))
                 conn.commit()
                 conn.close()
                 return {"id": task_id, "type": task_type, "payload": json.loads(payload), "retries": retries, "max_retries": max_retries}
@@ -193,26 +218,26 @@ class QueueManager:
             
         now = datetime.now().isoformat()
         with self.lock:
-            conn = sqlite3.connect(DB_PATH)
+            conn = psycopg2.connect(DATABASE_URL)
             cursor = conn.cursor()
             
             if success:
-                cursor.execute("UPDATE tasks SET status = 'completed', updated_at = ? WHERE id = ?", (now, task_id))
+                cursor.execute("UPDATE tasks SET status = 'completed', updated_at = %s WHERE id = %s", (now, task_id))
                 logger.info(f"[Queue Worker] Задача #{task_id} выполнена успешно!")
             else:
                 new_retries = task["retries"] + 1
                 if new_retries >= task["max_retries"]:
                     cursor.execute("""
                         UPDATE tasks 
-                        SET status = 'failed', retries = ?, error_message = ?, updated_at = ? 
-                        WHERE id = ?
+                        SET status = 'failed', retries = %s, error_message = %s, updated_at = %s 
+                        WHERE id = %s
                     """, (new_retries, error_msg, now, task_id))
                     logger.error(f"[!] [Queue Worker] Задача #{task_id} исчерпала попытки. Статус: FAILED")
                 else:
                     cursor.execute("""
                         UPDATE tasks 
-                        SET status = 'pending', retries = ?, error_message = ?, updated_at = ? 
-                        WHERE id = ?
+                        SET status = 'pending', retries = %s, error_message = %s, updated_at = %s 
+                        WHERE id = %s
                     """, (new_retries, error_msg, now, task_id))
                     logger.warning(f"[*] [Queue Worker] Задача #{task_id} возвращена в очередь на повтор. Попытка {new_retries}/{task['max_retries']}")
                     

@@ -85,7 +85,7 @@ def init_catalog_tables():
                     id SERIAL PRIMARY KEY,
                     sku VARCHAR(200) NOT NULL UNIQUE,
                     category VARCHAR(100), gost VARCHAR(50),
-                    d NUMERIC(10,2), D NUMERIC(10,2), B NUMERIC(10,2),
+                    d_inner NUMERIC(10,2), d_outer NUMERIC(10,2), b_width NUMERIC(10,2),
                     type VARCHAR(300), brand VARCHAR(50), stock VARCHAR(100),
                     price NUMERIC(12,2) NOT NULL DEFAULT 0,
                     img VARCHAR(300), created_at VARCHAR(100)
@@ -127,7 +127,7 @@ def init_catalog_tables():
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     sku TEXT NOT NULL UNIQUE,
                     category TEXT, gost TEXT,
-                    "d" REAL, "D" REAL, "B" REAL,
+                    d_inner REAL, d_outer REAL, b_width REAL,
                     type TEXT, brand TEXT, stock TEXT,
                     price REAL NOT NULL DEFAULT 0,
                     img TEXT, created_at TEXT
@@ -196,8 +196,9 @@ def seed_data():
                 ('FKD UCP 209', 'housing', '480209', 45, 85, 49.2, 'Корпусной узел на лапах', 'FKD', '120 шт', 1050, 'images/ucp.jpg'),
             ]
             now = datetime.now().isoformat()
+            skus = [sku + (now,) for sku in skus]
             cursor.executemany(f"""
-                INSERT INTO sku_catalog (sku, category, gost, d, D, B, type, brand, stock, price, img, created_at)
+                INSERT INTO sku_catalog (sku, category, gost, d_inner, d_outer, b_width, type, brand, stock, price, img, created_at)
                 VALUES ({_ph(12)})
             """, skus)
             logger.info(f"[Seed] Загружено {len(skus)} SKU в каталог.")
@@ -212,6 +213,7 @@ def seed_data():
                 ('ООО "Воронежский Элеватор"', 'BX_1122', 'main@vorelev.ru', 'Воронеж', 20, 'vip'),
             ]
             now = datetime.now().isoformat()
+            clients = [client + (now,) for client in clients]
             cursor.executemany(f"""
                 INSERT INTO clients (name, bitrix_id, email, city, discount, status, created_at)
                 VALUES ({_ph(7)})
@@ -306,8 +308,17 @@ def verify_b2b_token(request: Request):
 
 # Instantiate queue manager and start worker thread on server boot
 logger.info("[Server] Инициализация менеджера очередей задач...")
-qm = QueueManager()
-qm.start_worker()
+qm = None
+if _use_pg:
+    qm = QueueManager()
+    qm.start_worker()
+else:
+    logger.warning("[Queue] PostgreSQL недоступен. Очередь задач отключена для локального SQLite-режима.")
+
+def get_queue_manager():
+    if qm is None:
+        raise HTTPException(status_code=503, detail="Очередь задач недоступна: PostgreSQL не запущен. КП, каталог и клиенты работают в локальном SQLite-режиме.")
+    return qm
 
 class TaskInput(BaseModel):
     task_type: str
@@ -333,33 +344,38 @@ def add_task(input_data: TaskInput):
     if input_data.task_type not in valid_types:
         raise HTTPException(status_code=400, detail=f"Невалидный тип задачи. Допустимые: {valid_types}")
         
-    task_id = qm.add_task(input_data.task_type, input_data.payload, input_data.max_retries)
+    manager = get_queue_manager()
+    task_id = manager.add_task(input_data.task_type, input_data.payload, input_data.max_retries)
     return {"status": "added", "task_id": task_id, "detail": "Задача успешно добавлена в очередь на обработку."}
 
 @app.get("/api/queue/status/{task_id}")
 def get_task_status(task_id: int):
-    status = qm.get_task_status(task_id)
+    manager = get_queue_manager()
+    status = manager.get_task_status(task_id)
     if not status:
         raise HTTPException(status_code=404, detail="Задача с таким ID не найдена в базе данных.")
     return status
 
 @app.get("/api/queue/list", dependencies=[Depends(verify_b2b_token)])
 def list_tasks():
-    return qm.list_tasks(limit=50)
+    manager = get_queue_manager()
+    return manager.list_tasks(limit=50)
 
 @app.get("/api/queue/stats", dependencies=[Depends(verify_b2b_token)])
 def get_stats():
-    return qm.get_queue_stats()
+    manager = get_queue_manager()
+    return manager.get_queue_stats()
 
 @app.post("/api/queue/retry/{task_id}", dependencies=[Depends(verify_b2b_token)])
 def retry_task(task_id: int):
-    status = qm.get_task_status(task_id)
+    manager = get_queue_manager()
+    status = manager.get_task_status(task_id)
     if not status:
         raise HTTPException(status_code=404, detail="Задача не найдена.")
     if status["status"] != "failed":
         raise HTTPException(status_code=400, detail="Перезапустить можно только задачи со статусом 'failed'.")
         
-    qm.retry_task(task_id)
+    manager.retry_task(task_id)
     return {"status": "queued", "task_id": task_id, "detail": "Задача возвращена в статус 'pending' на повторную обработку."}
 
 # === WEBHOOK ENDPOINTS (PUSH INTEGRATIONS) ===
@@ -390,7 +406,8 @@ def bitrix_webhook(payload: BitrixWebhookInput):
     }
     
     # Queue task asynchronously so Bitrix gets immediate 200 OK reply
-    task_id = qm.add_task("crm_lead", task_payload, max_retries=3)
+    manager = get_queue_manager()
+    task_id = manager.add_task("crm_lead", task_payload, max_retries=3)
     return {
         "status": "received",
         "event_processed": payload.event,
@@ -409,7 +426,8 @@ def one_c_webhook(payload: OneCWebhookInput):
     }
     
     # Queue heavy inventory update asynchronously
-    task_id = qm.add_task("1c_sync", task_payload, max_retries=3)
+    manager = get_queue_manager()
+    task_id = manager.add_task("1c_sync", task_payload, max_retries=3)
     return {
         "status": "received",
         "sku_updated": payload.sku,
@@ -481,7 +499,7 @@ def recalc_proposal_total(proposal_id: int):
 def list_skus(category: Optional[str] = None, search: Optional[str] = None, d_min: Optional[float] = None, d_max: Optional[float] = None):
     conn = get_db()
     cursor = conn.cursor()
-    query = "SELECT id, sku, category, gost, d, D, B, type, brand, stock, price, img FROM sku_catalog WHERE 1=1"
+    query = "SELECT id, sku, category, gost, d_inner, d_outer, b_width, type, brand, stock, price, img FROM sku_catalog WHERE 1=1"
     params = []
     if category and category != 'all':
         query += " AND category = %s"
@@ -490,13 +508,13 @@ def list_skus(category: Optional[str] = None, search: Optional[str] = None, d_mi
         query += " AND (sku ILIKE %s OR type ILIKE %s OR gost ILIKE %s)"
         params.extend([f"%{search}%", f"%{search}%", f"%{search}%"])
     if d_min is not None:
-        query += " AND d >= %s"
+        query += " AND d_inner >= %s"
         params.append(d_min)
     if d_max is not None:
-        query += " AND d <= %s"
+        query += " AND d_inner <= %s"
         params.append(d_max)
     query += " ORDER BY id ASC"
-    cursor.execute(query, params)
+    cursor.execute(q(query), params)
     rows = cursor.fetchall()
     conn.close()
     return [{"id": r[0], "sku": r[1], "category": r[2], "gost": r[3], "d": float(r[4]) if r[4] else None,
@@ -510,7 +528,7 @@ def add_sku(data: SkuInput):
     cursor = conn.cursor()
     try:
         cursor.execute(q("""
-            INSERT INTO sku_catalog (sku, category, gost, d, D, B, type, brand, stock, price, img, created_at)
+            INSERT INTO sku_catalog (sku, category, gost, d_inner, d_outer, b_width, type, brand, stock, price, img, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING id
         """), (data.sku, data.category, data.gost, data.d, data.D, data.B, data.type, data.brand, data.stock, data.price, data.img, now))
         sku_id = get_last_id(cursor)
@@ -771,7 +789,10 @@ def send_proposal(proposal_id: int, data: SendEmailInput):
         conn.commit()
         conn.close()
         # Also queue a task for CRM logging
-        qm.add_task("crm_lead", {"type": "proposal_sent", "proposal_id": proposal_id, "client_email": client_email, "client_name": client_name}, max_retries=3)
+        if qm is not None:
+            qm.add_task("crm_lead", {"type": "proposal_sent", "proposal_id": proposal_id, "client_email": client_email, "client_name": client_name}, max_retries=3)
+        else:
+            logger.warning(f"[Queue] CRM-задача для КП #{proposal_id} не добавлена: очередь отключена.")
         return {"status": "sent", "proposal_id": proposal_id, "recipient": client_email}
     else:
         raise HTTPException(status_code=500, detail="Не удалось отправить email. Проверьте настройки SMTP.")

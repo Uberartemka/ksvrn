@@ -204,13 +204,13 @@
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm grid lg:grid-cols-4 gap-4 items-end">
+      <div class="bg-white p-5 rounded-2xl border border-neutral-200 shadow-sm grid lg:grid-cols-4 gap-4 items-start">
         <div class="lg:col-span-2">
           <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Клиент из CRM (Битрикс24)</label>
           <select id="kp-client-select" onchange="onClientChange()" class="w-full rounded-xl border border-neutral-300 px-4 py-2.5 text-sm focus:border-hhb outline-none bg-white">
             <option value="">-- Выберите клиента --</option>
           </select>
-          <div id="kp-client-email" class="text-[11px] text-neutral-500 mt-1.5 hidden"></div>
+          <div id="kp-client-email" class="text-[11px] text-neutral-500 mt-1.5 h-4 leading-4 invisible"></div>
         </div>
         <div>
           <label class="block text-xs font-bold text-neutral-500 uppercase mb-2">Общая скидка КП</label>
@@ -219,7 +219,7 @@
             <button onclick="setGlobalDiscount()" class="bg-hhb hover:bg-hhb-dark text-white px-4 rounded-xl text-xs font-bold transition">Применить</button>
           </div>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-2 pt-6">
           <button onclick="createNewProposal()" class="flex-1 bg-neutral-900 hover:bg-black text-white text-xs py-3 rounded-xl font-bold uppercase tracking-wider transition">Новое КП</button>
           <button onclick="sendProposalEmail()" id="btn-send-email" disabled class="flex-1 bg-hhb hover:bg-hhb-dark disabled:bg-neutral-300 disabled:cursor-not-allowed text-white text-xs py-3 rounded-xl font-bold uppercase tracking-wider transition flex items-center justify-center gap-2">
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
@@ -785,9 +785,10 @@
       const emailDiv = document.getElementById('kp-client-email');
       if (currentClient && currentClient.email) {
         emailDiv.textContent = 'Email: ' + currentClient.email;
-        emailDiv.classList.remove('hidden');
+        emailDiv.classList.remove('invisible');
       } else {
-        emailDiv.classList.add('hidden');
+        emailDiv.textContent = '';
+        emailDiv.classList.add('invisible');
       }
       if (currentClient && currentClient.discount) {
         document.getElementById('kp-global-discount').value = currentClient.discount;

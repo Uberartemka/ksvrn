@@ -91,6 +91,23 @@
   /* ── FADE IN ANIMATIONS ── */
   .fade-up { opacity: 0; transform: translateY(24px); transition: all .7s ease; }
   .fade-up.in { opacity: 1; transform: none; }
+
+  /* ── INDUSTRY CARDS ── */
+  .industry-card img {
+    transform-origin: center center;
+    transition: transform 0.7s ease-out;
+  }
+  .industry-card:hover img {
+    transform: scale(1.08);
+  }
+  .industry-card .card-color-wash {
+    transform: translateY(30px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .industry-card:hover .card-color-wash {
+    opacity: 1 !important;
+    transform: translateY(0);
+  }
 </style>
 </head>
 <body class="antialiased">
@@ -431,54 +448,74 @@
       <h2 class="text-4xl md:text-5xl font-extrabold leading-tight font-bebas tracking-wide">Знаем каждый узел <span class="text-hhb">вашего оборудования</span></h2>
     </div>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
-      <div class="fade-up rounded-3xl bg-ink-900 text-white p-0 aspect-[4/5] relative overflow-hidden group">
-        <img src="images/apk.jpg" alt="АПК" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
-        <div class="absolute inset-0 bg-black/30"></div>
+
+      <!-- Card 01 -->
+      <div class="fade-up industry-card rounded-3xl p-0 aspect-[4/5] relative overflow-hidden group cursor-pointer">
+        <img src="images/apk.jpg" alt="АПК" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108" loading="lazy" />
+        <!-- base dark gradient always visible so text is legible -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 transition-opacity duration-500"></div>
+        <!-- red color wash that grows on hover from bottom -->
+        <div class="card-color-wash absolute inset-0 bg-gradient-to-t from-hhb/90 via-hhb/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"></div>
+        <!-- red accent line at bottom -->
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-hhb scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></div>
         <div class="relative z-10 p-7 flex flex-col justify-between h-full">
-          <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">01</div>
+          <div class="font-bebas text-4xl font-extrabold text-white/30 group-hover:text-white transition-colors duration-300">01</div>
           <div>
-            <div class="text-sm text-white/50 font-semibold uppercase tracking-wider">АПК</div>
-            <div class="text-2xl font-bold mt-1">Сельхозтехника</div>
-            <div class="text-sm text-white/70 mt-2">Комбайны, посевная, почвообработка, опрыскиватели.</div>
+            <div class="text-xs text-hhb group-hover:text-white/80 font-bold uppercase tracking-widest transition-colors duration-300">АПК</div>
+            <div class="text-2xl font-bold mt-1 text-white">Сельхозтехника</div>
+            <div class="text-sm text-white/60 group-hover:text-white/90 mt-2 transition-colors duration-300 leading-relaxed">Комбайны, посевная, почвообработка, опрыскиватели.</div>
           </div>
         </div>
       </div>
-      <div class="fade-up rounded-3xl bg-neutral-100 p-0 aspect-[4/5] relative overflow-hidden group">
-        <img src="images/storage.jpg" alt="ХРАНЕНИЕ" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
-        <div class="absolute inset-0 bg-white/40"></div>
+
+      <!-- Card 02 -->
+      <div class="fade-up industry-card rounded-3xl p-0 aspect-[4/5] relative overflow-hidden group cursor-pointer">
+        <img src="images/storage.jpg" alt="ХРАНЕНИЕ" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108" loading="lazy" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 transition-opacity duration-500"></div>
+        <div class="card-color-wash absolute inset-0 bg-gradient-to-t from-hhb/90 via-hhb/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-hhb scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></div>
         <div class="relative z-10 p-7 flex flex-col justify-between h-full">
-          <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">02</div>
+          <div class="font-bebas text-4xl font-extrabold text-white/30 group-hover:text-white transition-colors duration-300">02</div>
           <div>
-            <div class="text-sm text-ink-500 font-semibold uppercase tracking-wider">ХРАНЕНИЕ</div>
-            <div class="text-2xl font-bold mt-1">Зерноочистка и элеваторы</div>
-            <div class="text-sm text-ink-500 mt-2">Нории, транспортёры, сепараторы, сушилки.</div>
+            <div class="text-xs text-hhb group-hover:text-white/80 font-bold uppercase tracking-widest transition-colors duration-300">ХРАНЕНИЕ</div>
+            <div class="text-2xl font-bold mt-1 text-white">Зерноочистка и элеваторы</div>
+            <div class="text-sm text-white/60 group-hover:text-white/90 mt-2 transition-colors duration-300 leading-relaxed">Нории, транспортёры, сепараторы, сушилки.</div>
           </div>
         </div>
       </div>
-      <div class="fade-up rounded-3xl bg-neutral-100 p-0 aspect-[4/5] relative overflow-hidden group">
-        <img src="images/food.jpg" alt="ПИЩЕВКА" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
-        <div class="absolute inset-0 bg-white/40"></div>
+
+      <!-- Card 03 -->
+      <div class="fade-up industry-card rounded-3xl p-0 aspect-[4/5] relative overflow-hidden group cursor-pointer">
+        <img src="images/food.jpg" alt="ПИЩЕВКА" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108" loading="lazy" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 transition-opacity duration-500"></div>
+        <div class="card-color-wash absolute inset-0 bg-gradient-to-t from-hhb/90 via-hhb/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-hhb scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></div>
         <div class="relative z-10 p-7 flex flex-col justify-between h-full">
-          <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">03</div>
+          <div class="font-bebas text-4xl font-extrabold text-white/30 group-hover:text-white transition-colors duration-300">03</div>
           <div>
-            <div class="text-sm text-ink-500 font-semibold uppercase tracking-wider">ПИЩЕВКА</div>
-            <div class="text-2xl font-bold mt-1">Пищевая переработка</div>
-            <div class="text-sm text-ink-500 mt-2">МЭЗы, мукомольное, сахарное производство.</div>
+            <div class="text-xs text-hhb group-hover:text-white/80 font-bold uppercase tracking-widest transition-colors duration-300">ПИЩЕВКА</div>
+            <div class="text-2xl font-bold mt-1 text-white">Пищевая переработка</div>
+            <div class="text-sm text-white/60 group-hover:text-white/90 mt-2 transition-colors duration-300 leading-relaxed">МЭЗы, мукомольное, сахарное производство.</div>
           </div>
         </div>
       </div>
-      <div class="fade-up rounded-3xl bg-ink-900 text-white p-0 aspect-[4/5] relative overflow-hidden group">
-        <img src="images/heavy.jpg" alt="ТЯЖПРОМ" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105" loading="lazy" />
-        <div class="absolute inset-0 bg-black/30"></div>
+
+      <!-- Card 04 -->
+      <div class="fade-up industry-card rounded-3xl p-0 aspect-[4/5] relative overflow-hidden group cursor-pointer">
+        <img src="images/heavy.jpg" alt="ТЯЖПРОМ" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108" loading="lazy" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 transition-opacity duration-500"></div>
+        <div class="card-color-wash absolute inset-0 bg-gradient-to-t from-hhb/90 via-hhb/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-1 bg-hhb scale-x-0 group-hover:scale-x-100 transition-transform duration-500 ease-out origin-left"></div>
         <div class="relative z-10 p-7 flex flex-col justify-between h-full">
-          <div class="text-3xl font-extrabold font-bebas text-hhb text-4xl">04</div>
+          <div class="font-bebas text-4xl font-extrabold text-white/30 group-hover:text-white transition-colors duration-300">04</div>
           <div>
-            <div class="text-sm text-white/50 font-semibold uppercase tracking-wider">ТЯЖПРОМ</div>
-            <div class="text-2xl font-bold mt-1">Тяжёлая промышленность</div>
-            <div class="text-sm text-white/70 mt-2">Дробилки, грохоты, конвейеры, карьерная техника.</div>
+            <div class="text-xs text-hhb group-hover:text-white/80 font-bold uppercase tracking-widest transition-colors duration-300">ТЯЖПРОМ</div>
+            <div class="text-2xl font-bold mt-1 text-white">Тяжёлая промышленность</div>
+            <div class="text-sm text-white/60 group-hover:text-white/90 mt-2 transition-colors duration-300 leading-relaxed">Дробилки, грохоты, конвейеры, карьерная техника.</div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
